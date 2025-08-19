@@ -245,7 +245,7 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'widget_tweaks',
     'registration',
-    'contct_app',
+    'contact_app',
     'pwa',
 ]
 
