@@ -1,31 +1,37 @@
 version: '3.8'
 
 services:
+  # This is your React frontend application
+  frontend:
+    build: ./first_landing
+    restart: always
+
+  # This is your Django backend application
   backend:
     build: ./labour_crm
-    command: /app/startup.sh
+    command: /app/startup.sh # Make sure startup.sh is in labour_crm
+    restart: always
     expose:
       - 8000
-    restart: always
     environment:
-      # --- IMPORTANT: Fill in your secrets here ---
+      # --- Add your secrets and settings here ---
       - SECRET_KEY=your_super_strong_and_secret_key_here
       - DEBUG=0
-      - ALLOWED_HOSTS=13.232.203.123,backend #<-- Your server IP
-      - DJANGO_SUPERUSER_USERNAME=admin
-      - DJANGO_SUPERUSER_EMAIL=admin@example.com
-      - DJANGO_SUPERUSER_PASSWORD=a_strong_password_here
-      
-      # --- Credentials for your SINGLE AWS RDS Database ---
+      - ALLOWED_HOSTS=13.232.203.123,backend # Your server IP
+      # --- Your Database Credentials ---
       - POSTGRES_DB=supplysidelabourdb
       - POSTGRES_USER=supplysidelabour
       - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
       - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com
 
+  # This is the Nginx "traffic cop"
   nginx:
-    build: ./nginx
+    image: nginx:stable-alpine
     ports:
       - "80:80"
-    restart: always
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
+      - frontend
       - backend
+    restart: always
