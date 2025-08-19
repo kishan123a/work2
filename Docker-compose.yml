@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./labour_crm
+    command: /app/startup.sh
+    expose:
+      - 8000
+    restart: always
+    environment:
+      # --- IMPORTANT: Fill in your secrets here ---
+      - SECRET_KEY=your_super_strong_and_secret_key_here
+      - DEBUG=0
+      - ALLOWED_HOSTS=13.232.203.123,backend #<-- Your server IP
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+      - DJANGO_SUPERUSER_PASSWORD=a_strong_password_here
+      
+      # --- Credentials for your SINGLE AWS RDS Database ---
+      - POSTGRES_DB=supplysidelabourdb
+      - POSTGRES_USER=supplysidelabour
+      - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
+      - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - backend

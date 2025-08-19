@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Background & Foreground */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* Card Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    /* Popover Colors */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Primary - Agricultural Green */
+    --primary: 120 48% 35%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 120 35% 45%;
+    --primary-dark: 120 55% 25%;
+
+    /* Secondary - Purple (UC inspired) */
+    --secondary: 267 83% 58%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-light: 267 70% 68%;
+    --secondary-dark: 267 90% 48%;
+
+    /* Muted Colors */
+    --muted: 120 15% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* Accent - Earth Tones */
+    --accent: 35 35% 85%;
+    --accent-foreground: 35 35% 25%;
+
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Borders & Inputs */
+    --border: 120 15% 90%;
+    --input: 120 15% 92%;
+    --ring: 120 48% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    
+    /* Success & Warning */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    /* Sidebar Colors */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 120 48% 35%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 120 15% 96%;
+    --sidebar-accent-foreground: 120 48% 35%;
+    --sidebar-border: 120 15% 90%;
+    --sidebar-ring: 120 48% 35%;
+  }
+
+  .dark {
+    /* Background & Foreground */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    /* Card Colors */
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    /* Popover Colors */
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary - Agricultural Green (Dark) */
+    --primary: 120 35% 55%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-light: 120 30% 65%;
+    --primary-dark: 120 40% 45%;
+
+    /* Secondary - Purple (Dark) */
+    --secondary: 267 70% 68%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-light: 267 60% 78%;
+    --secondary-dark: 267 80% 58%;
+
+    /* Muted Colors */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    /* Accent */
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Destructive */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Borders & Inputs */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 120 35% 55%;
+
+    /* Success & Warning (Dark) */
+    --success: 142 70% 50%;
+    --success-foreground: 222.2 47.4% 11.2%;
+    --warning: 38 85% 60%;
+    --warning-foreground: 222.2 47.4% 11.2%;
+
+    /* Sidebar Colors (Dark) */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 120 35% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 120 35% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

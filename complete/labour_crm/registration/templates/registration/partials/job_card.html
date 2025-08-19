@@ -1,0 +1,56 @@
+{# registration/partials/job_card.html #}
+
+<div class="card job-card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h5 class="job-title fw-bold mb-1">{{ job.title }}</h5>
+                <div class="job-meta mb-2">
+                    <span><i class="fas fa-map-marker-alt"></i> {{ job.location }}</span> &bull;
+                    <span>Posted on {{ job.created_at|date:"d M, Y" }}</span>
+                </div>
+                <div class="job-details d-flex flex-wrap gap-3">
+                    <span><i class="fas fa-users"></i> {{ job.workers_needed }} Workers</span>
+                    <span><i class="fas fa-calendar-alt"></i> {{ job.duration_days }} Days</span>
+                    <span><i class="fas fa-calendar-check"></i> By {{ job.required_by_date|date:"d M, Y" }}</span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="job-rate">₹{{ job.rate_per_day|floatformat:0 }}</div>
+                <div class="job-rate-label">Per Worker / Day</div>
+                <span class="job-tag mt-2 {{ job.status_class }}">{{ job.get_status_display }}</span>
+            </div>
+        </div>
+      <hr>
+<div class="d-flex justify-content-end align-items-center">
+    <a href="{% url 'registration:job_detail' job.id %}" class="btn btn-sm btn-outline-secondary me-2">View Details</a>
+    
+    {% if job.status == 'pending' %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#allocateTeamModal-{{ job.id }}">
+            <i class="fas fa-users-cog me-2"></i>Allocate Team
+        </button>
+    {% elif job.status == 'leader_responded' %}
+        {# NEW BUTTON FOR ADMIN ACTION #}
+        <a href="{% url 'registration:view_leader_response' job.id %}" class="btn btn-warning">
+            <i class="fas fa-inbox me-2"></i>View Response
+        </a>
+
+{% elif job.status == 'ongoing' %}
+   
+    <a href="{% url 'registration:live_job_status' job.id %}" class="btn btn-info">
+        <i class="fas fa-satellite-dish me-2"></i>Live Status
+    </a>
+
+    {% elif job.status == 'ongoing' %}
+        <form action="#" method="POST" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check-circle me-2"></i>Mark as Complete
+            </button>
+        </form>
+    {% elif job.status == 'waiting_for_response' %}
+         <button class="btn btn-info disabled"><i class="fas fa-hourglass-half me-2"></i>Awaiting Response</button>
+    {% endif %}
+</div>
+    </div>
+</div>
