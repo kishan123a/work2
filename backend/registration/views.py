@@ -1,19 +1,16 @@
 # registration/views.py
 
-# --- Core Django and Python Imports ---
 import base64
 import uuid
 import json
 import logging
 import json
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
+
 from decimal import Decimal
 from dateutil.parser import isoparse
 from django.shortcuts import render
-
-
-# --- Django Imports ---
-from django.contrib.admin.views.decorators import staff_member_required
-from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from datetime import  timedelta
 from django.shortcuts import render, redirect
@@ -128,49 +125,63 @@ class MultiStepRegistrationView(View):
 
         return render(request, self.template_name, context)
 
-@csrf_exempt
-@require_POST
-def check_mobile_number_api(request):
-    """
-    API endpoint to check if a mobile number already exists in the database.
-    """
-    # This function is preserved exactly as you had it.
-    try:
-        data = json.loads(request.body)
-        mobile_number = data.get('mobile_number', '').strip()
-        if not mobile_number:
-            return JsonResponse({'exists': False, 'message': 'No mobile number provided'})
+# @csrf_exempt
+# @require_POST
+# def check_mobile_number_api(request):
+#     """
+#     API endpoint to check if a mobile number already exists in the database.
+#     """
+#     # This function is preserved exactly as you had it.
+#     try:
+#         data = json.loads(request.body)
+#         mobile_number = data.get('mobile_number', '').strip()
+#         if not mobile_number:
+#             return JsonResponse({'exists': False, 'message': 'No mobile number provided'})
         
-        exists = mobile_number_exists(mobile_number)
-        return JsonResponse({
-            'exists': exists,
-            'message': 'Mobile number already registered' if exists else 'Mobile number available'
-        })
-    except Exception as e:
-        logger.error(f"Error checking mobile number: {e}")
-        return JsonResponse({'exists': False, 'message': 'Server error'}, status=500)
-
+#         exists = mobile_number_exists(mobile_number)
+#         return JsonResponse({
+#             'exists': exists,
+#             'message': 'Mobile number already registered' if exists else 'Mobile number available'
+#         })
+#     except Exception as e:
+#         logger.error(f"Error checking mobile number: {e}")
+#         return JsonResponse({'exists': False, 'message': 'Server error'}, status=500)
+# Helper function to get JSON data safely
+def get_json_data(data, key):
+    """
+    Safely retrieves and decodes a JSON string from request data.
+    Returns an empty list if the data is not a valid JSON string.
+    """
+    try:
+        val_str = data.get(key, '[]')
+        # Handle empty string case explicitly
+        if not val_str:
+            return []
+        return json.loads(val_str)
+    except (json.JSONDecodeError, TypeError) as e:
+        logger.error(f"JSONDecodeError or TypeError for key '{key}': {data.get(key)}. Error: {e}")
+        return []
 
 @csrf_exempt
 @require_POST
 def submit_registration_api(request):
     """
-    Handles both ONLINE (file upload) and OFFLINE (base64 string) submissions
-    and saves the image to Cloudinary. This is the fully corrected version.
+    Handles both ONLINE and OFFLINE submissions and saves the image to Cloudinary.
+    This version includes robust error handling for JSON fields and duplicate mobile numbers.
     """
     logger.info("API received a submission.")
     try:
-        data = request.POST
         
-        # --- Get Image Data (handles both online and offline paths) ---
-        photo_file = request.FILES.get('photo')
-        photo_base64 = data.get('photo_base64')
-
-        # --- Create Model Instance ---
+        data = request.POST
         category = data.get('category')
+        # Check for duplicate mobile number here for immediate feedback
+        mobile_number = data.get('mobile_number')
+        # if mobile_number and IndividualLabor.objects.filter(mobile_number=mobile_number).exists():
+        #     return JsonResponse({'status': 'error', 'error_type': 'duplicate_mobile', 'message': 'This mobile number is already registered.'}, status=409)
+
         common_data = {
             'full_name': data.get('full_name'),
-            'mobile_number': data.get('mobile_number'),
+            'mobile_number': mobile_number,
             'taluka': data.get('taluka'),
             'village': data.get('village'),
             'data_sharing_agreement': data.get('data_sharing_agreement') == 'true'
@@ -178,10 +189,9 @@ def submit_registration_api(request):
         
         instance = None
         if category == 'individual_labor':
-            skills_str = data.get('skills', '[]')
-            skills = json.loads(skills_str)
-            comm_prefs_str = data.get('communication_preferences', '[]')
-            communication_preferences = json.loads(comm_prefs_str)
+            skills = get_json_data(data, 'skills')
+            communication_preferences = get_json_data(data, 'communication_preferences')
+            
             instance = IndividualLabor(
                 **common_data,
                 gender=data.get('gender'),
@@ -191,36 +201,53 @@ def submit_registration_api(request):
                 willing_to_migrate=data.get('willing_to_migrate') == 'true',
                 expected_wage=Decimal(data.get('expected_wage', 0)),
                 availability=data.get('availability'),
-                skill_pruning='pruning' in skills,
-                skill_harvesting='harvesting' in skills,
-                skill_dipping='dipping' in skills,
-                skill_thinning='thinning' in skills,
-                comm_mobile_app='mobile_app' in communication_preferences,
-                comm_whatsapp='whatsapp' in communication_preferences,
-                comm_calling='calling' in communication_preferences,
-                comm_sms='sms' in communication_preferences,
             )
+            instance.skill_pruning = 'pruning' in skills
+            instance.skill_harvesting = 'harvesting' in skills
+            instance.skill_dipping = 'dipping' in skills
+            instance.skill_thinning = 'thinning' in skills
+            instance.comm_mobile_app = 'mobile_app' in communication_preferences
+            instance.comm_whatsapp = 'whatsapp' in communication_preferences
+            instance.comm_calling = 'calling' in communication_preferences
+            instance.comm_sms = 'sms' in communication_preferences
+
         elif category == 'mukkadam':
-             instance = Mukkadam(
+            skills = get_json_data(data, 'skills')
+            supply_areas = get_json_data(data, 'supply_areas')
+            
+            instance = Mukkadam(
                 **common_data,
                 providing_labour_count=int(data.get('providing_labour_count', 0)),
                 total_workers_peak=int(data.get('total_workers_peak', 0)),
                 expected_charges=Decimal(data.get('expected_charges', 0)),
                 labour_supply_availability=data.get('labour_supply_availability'),
                 arrange_transport=data.get('arrange_transport'),
-                supply_areas=data.get('supply_areas'),
+                arrange_transport_other=data.get('arrange_transport_other'),
             )
+            instance.skill_pruning = 'pruning' in skills
+            instance.skill_harvesting = 'harvesting' in skills
+            instance.skill_dipping = 'dipping' in skills
+            instance.skill_thinning = 'thinning' in skills
+            instance.supply_areas_local = 'local' in supply_areas
+            instance.supply_areas_taluka = 'taluka' in supply_areas
+            instance.supply_areas_district = 'district' in supply_areas
+
         elif category == 'transport':
+            service_areas = get_json_data(data, 'service_areas')
+            
             instance = Transport(
                 **common_data,
                 vehicle_type=data.get('vehicle_type'),
                 people_capacity=int(data.get('people_capacity', 0)),
                 expected_fair=Decimal(data.get('expected_fair', 0)),
                 availability=data.get('availability'),
-                service_areas=data.get('service_areas')
             )
+            instance.service_areas_local = 'local' in service_areas
+            instance.service_areas_taluka = 'taluka' in service_areas
+            instance.service_areas_district = 'district' in service_areas
+
         elif category == 'others':
-             instance = Others(
+            instance = Others(
                 **common_data,
                 business_name=data.get('business_name'),
                 help_description=data.get('help_description'),
@@ -241,37 +268,33 @@ def submit_registration_api(request):
             except Exception as e:
                 logger.warning(f"Could not parse location data '{location_str}'. Error: {e}")
 
-        # --- Save the main model data (without photo yet) ---
-        instance.save()
-
-        # --- FINAL DEBUGGING CHECK ---
-        print("\n--- RUNTIME STORAGE CHECK ---")
-        print(f"The default_storage object being used is: {default_storage}")
-        print(f"The class of the storage object is: {default_storage.__class__}")
-        print("---------------------------\n")
-
-        # --- Save Photo to Cloudinary (Handles both paths) ---
+        # --- Handle and Save Photo (Unified Logic) ---
+        photo_file = request.FILES.get('photo')
         if photo_file:
-            instance.photo.save(photo_file.name, photo_file, save=True)
-            logger.info(f"Photo for {common_data['full_name']} saved to Cloudinary from direct upload.")
-        elif photo_base64:
-            try:
-                header, img_str = photo_base64.split(';base64,')
-                ext = header.split('/')[-1]
-                file_name = f"{uuid.uuid4().hex}.{ext}"
-                decoded_file = base64.b64decode(img_str)
-                content_file = ContentFile(decoded_file, name=file_name)
-                instance.photo.save(file_name, content_file, save=True)
-                logger.info(f"Photo for {common_data['full_name']} saved to Cloudinary from offline sync.")
-            except Exception as e:
-                logger.error(f"Failed to save photo from Base64. Error: {e}", exc_info=True)
+            instance.photo.save(photo_file.name, photo_file, save=False)
+            logger.info(f"Photo for {common_data['full_name']} attached to instance from file upload.")
+        else:
+            photo_base64 = data.get('photo_base64')
+            if photo_base64:
+                try:
+                    header, img_str = photo_base64.split(';base64,')
+                    ext = header.split('/')[-1]
+                    file_name = f"{uuid.uuid4().hex}.{ext}"
+                    decoded_file = base64.b64decode(img_str)
+                    content_file = ContentFile(decoded_file, name=file_name)
+                    instance.photo.save(file_name, content_file, save=False)
+                    logger.info(f"Photo for {common_data['full_name']} attached to instance from Base64 string.")
+                except Exception as e:
+                    logger.error(f"Failed to save photo from Base64. Error: {e}", exc_info=True)
 
+        instance.save()
+        logger.info("Instance and photo saved successfully.")
+        
         return JsonResponse({'status': 'success', 'message': 'Registration saved.'}, status=200)
 
     except Exception as e:
         logger.error(f"Critical error in submit_registration_api: {e}", exc_info=True)
         return JsonResponse({'status': 'error', 'message': 'An unexpected server error occurred.'}, status=500)
-
 
 def success_view(request):
     return render(request, 'registration/success.html')
@@ -307,58 +330,24 @@ def mobile_number_exists(mobile_number):
         return True
     return False
 
-from django.contrib.sessions.models import Session
-from django.utils import timezone
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages # Import the messages framework
-
 def login_view(request):
     if request.method == 'POST':
-        # Create a form instance with the submitted data
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            # The AuthenticationForm has already verified the user.
-            # We can get the user object directly from the form.
-            user = form.get_user()
-            login(request, user)
-            # Redirect to a success page.
-            return redirect('registration:leader_dashboard')
-        # If the form is not valid, the view will fall through and
-        # render the template with the form, which now contains the errors.
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                # After successful login, redirect them to the All Laborers page
+                return redirect('registration:leader_dashboard')
     else:
-        # For a GET request, create a new, blank form
         form = AuthenticationForm()
-        
     return render(request, 'registration/login.html', {'form': form})
-
 
 def logout_view(request):
     logout(request)
-    # (Optional but recommended) Add a message to inform the user.
-    messages.success(request, "You have been successfully logged out.")
     # After logout, redirect them back to the login page
-    return redirect('registration:login')
-# def login_view(request):
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request, data=request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             user = authenticate(username=username, password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 # After successful login, redirect them to the All Laborers page
-#                 return redirect('registration:leader_dashboard')
-#     else:
-#         form = AuthenticationForm()
-#     return render(request, 'registration/login.html', {'form': form})
-
-# def logout_view(request):
-#     logout(request)
-#     # After logout, redirect them back to the login page
 
 
 @login_required
@@ -601,37 +590,13 @@ def leader_ongoing_jobs_view(request):
         'unread_count': unread_count,
     }
     return render(request, 'registration/leader/leader_ongoing_jobs.html', context)
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.http import Http404 # Import Http404 to block access
-
-# Make sure all your models are imported
-from .models import (
-    Job, JobLeaderAllocation, WorkerStatus, 
-    IndividualLabor, Mukkadam, Transport
-)
 
 @login_required
 def find_laborers_view(request, job_id):
     """
     Page for a leader to find and filter available workers for a specific job.
-    This view is secured to ensure only the allocated leader can access it.
     """
-    # Step 1: Get the job object. This confirms the job ID is valid.
     job = get_object_or_404(Job, id=job_id)
-    
-    # Step 2: SECURITY CHECK - Verify that an allocation record exists
-    # linking this job to the currently logged-in user.
-    is_allocated = JobLeaderAllocation.objects.filter(
-        job=job, 
-        leader=request.user
-    ).exists()
-
-    # If no allocation record is found, block access immediately.
-    if not is_allocated:
-        raise Http404("You are not authorized to view this job allocation.")
-
-    # --- The rest of your view logic runs only if the check passes ---
 
     # Find all workers who are already booked
     booked_status = WorkerStatus.objects.filter(availability_status='booked')
@@ -644,6 +609,7 @@ def find_laborers_view(request, job_id):
         booked_workers[key] = True
 
     # Query all potential workers and then filter out the booked ones in Python
+    # This is often more efficient than complex multi-table EXCLUDE queries
     all_individuals = [w for w in IndividualLabor.objects.all() if f"individuallabor-{w.pk}" not in booked_workers]
     all_mukkadams = [w for w in Mukkadam.objects.all() if f"mukkadam-{w.pk}" not in booked_workers]
     all_transports = [w for w in Transport.objects.all() if f"transport-{w.pk}" not in booked_workers]
@@ -655,6 +621,7 @@ def find_laborers_view(request, job_id):
         'available_transports': all_transports,
     }
     return render(request, 'registration/labours/find_laborers.html', context)
+
 from django.contrib.contenttypes.models import ContentType
 
 @login_required
@@ -915,6 +882,9 @@ def leader_cancel_job_view(request, job_id):
 @login_required
 def reject_team_view(request, job_id):
     """Admin action to reject a leader's proposed team and reopen the job."""
+    if not request.user.is_superuser:
+        return redirect('registration:leader_dashboard')
+
     if request.method == 'POST':
         job = get_object_or_404(Job, id=job_id)
         rejected_leader = job.finalized_leader
@@ -950,38 +920,6 @@ def reject_team_view(request, job_id):
         return redirect('registration:job_requests')
 
     return redirect('registration:job_requests')
-
-@login_required
-def leader_reject_job_view(request, job_id):
-    """Leader action to cancel the job after admin approval."""
-    job = get_object_or_404(Job, id=job_id, finalized_leader=request.user)
-    if request.method == 'POST':
-        # This logic is similar to the admin's reject view
-        # 1. Free up workers
-        assignments = JobAssignment.objects.filter(job=job)
-        for assignment in assignments:
-            WorkerStatus.objects.update_or_create(
-                content_type=assignment.content_type,
-                object_id=assignment.object_id,
-                defaults={'availability_status': 'available', 'current_job': None}
-            )
-        # 2. Delete assignments
-        assignments.delete()
-        # 3. Reset job fields
-        job.status = 'pending'
-        job.finalized_leader = None
-        job.leader_response_message = None
-        job.leader_quoted_price = None
-        job.save()
-        messages.error(request, f"You have canceled the job '{job.title}'. It is now pending again.")
-        # Notify admin of cancellation
-        admin_user = User.objects.filter(is_superuser=True).first()
-        if admin_user:
-             Notification.objects.create(user=admin_user, message=f"Leader CANCELED the job after approval: '{job.title}'", job=job)
-    return redirect('registration:leader_dashboard')
-
-
-
 @login_required
 def job_response_view(request, job_id):
     """View to manage responses from team leaders"""
@@ -1635,8 +1573,8 @@ def profile_selector_view(request):
 
 # @login_required
 # def mark_notification_read(request, notification_id):
-    """Mark a notification as read"""
-    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
-    notification.is_read = True
-    notification.save()
-    return JsonResponse({'status': 'success'})
+    # """Mark a notification as read"""
+    # notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    # notification.is_read = True
+    # notification.save()
+    # return JsonResponse({'status': 'success'})

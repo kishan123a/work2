@@ -131,7 +131,7 @@ const ContactSection = () => {
       timestamp: new Date().toISOString()
     };
 
-    const backendApiUrl = 'https://work2-vn12.onrender.com/api/contact/submit/';
+    const backendApiUrl = '/api/contact/submit/';
 
     try {
       const response = await fetch(backendApiUrl, {

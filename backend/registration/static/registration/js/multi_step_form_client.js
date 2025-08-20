@@ -1272,12 +1272,9 @@ async function processAndSendRegistration(fullRegistrationData, dbKey = null) {
             const duplicateCheck = await checkMobileNumberDuplicate(mobileNumber);
             if (duplicateCheck.exists) {
                 console.warn(`Duplicate mobile number found: ${mobileNumber}`);
-                
-                // Remove from offline storage if dbKey provided
                 if (dbKey) {
                     await removeDuplicateFromOffline(mobileNumber);
                 }
-                
                 throw new Error(`Mobile number ${mobileNumber} is already registered.`);
             }
         }
@@ -1299,53 +1296,40 @@ async function processAndSendRegistration(fullRegistrationData, dbKey = null) {
             }
         }
 
-        // Handle image with priority: photoId from IndexedDB > photoBase64 fallback
-        let imageAppended = false;
-        
+        // --- CORRECTED IMAGE HANDLING LOGIC ---
+        let imageBlob = null;
+        let imageName = 'captured_image.jpeg';
+
         if (fullRegistrationData.step1?.photoId) {
             try {
                 const db = await openDB(DB_NAME, DB_VERSION);
                 const imageData = await db.get(STORE_OFFLINE_IMAGES, fullRegistrationData.step1.photoId);
-                
-                if (imageData && imageData.image) {
-                    // Ensure we have a valid Blob
-                    let imageBlob = imageData.image;
-                    
-                    // Convert to Blob if it's not already
-                    if (!(imageBlob instanceof Blob)) {
-                        if (typeof imageBlob === 'string' && imageBlob.startsWith('data:')) {
-                            // Convert base64 to Blob
-                            const response = await fetch(imageBlob);
-                            imageBlob = await response.blob();
-                        }
-                    }
-                    
-                    if (imageBlob instanceof Blob) {
-                        formData.append('photo', imageBlob, imageData.name || 'captured_image.jpeg');
-                        imageAppended = true;
-                        console.log(`Image from IndexedDB (ID: ${fullRegistrationData.step1.photoId}) appended successfully`);
-                    }
+                if (imageData && imageData.image instanceof Blob) {
+                    imageBlob = imageData.image;
+                    imageName = imageData.name || imageName;
                 }
             } catch (error) {
                 console.error('Error retrieving image from IndexedDB:', error);
             }
         }
-        
-        // Fallback to base64 if no image was appended from IndexedDB
-        if (!imageAppended && fullRegistrationData.step1?.photoBase64) {
+
+        if (!imageBlob && fullRegistrationData.step1?.photoBase64) {
             try {
                 const response = await fetch(fullRegistrationData.step1.photoBase64);
                 const blob = await response.blob();
-                formData.append('photo', blob, 'captured_image.jpeg');
-                imageAppended = true;
-                console.log('Image from base64 fallback appended successfully');
+                if (blob.size > 0) {
+                    imageBlob = blob;
+                }
             } catch (error) {
                 console.error('Failed to convert base64 to Blob:', error);
             }
         }
-        
-        if (!imageAppended) {
-            console.warn('No image was appended to form data');
+
+        if (imageBlob instanceof Blob && imageBlob.size > 0) {
+            formData.append('photo', imageBlob, imageName);
+            console.log(`Image appended to FormData successfully. Filename: ${imageName}, Size: ${imageBlob.size} bytes`);
+        } else {
+            console.warn('No image was found or appended to form data.');
         }
 
         // Debug FormData contents
@@ -1370,45 +1354,35 @@ async function processAndSendRegistration(fullRegistrationData, dbKey = null) {
 
         if (response.ok) {
             console.log('Registration submitted successfully.');
-            
-            // Clean up IndexedDB data if submission was successful
             if (dbKey) {
                 const db = await openDB(DB_NAME, DB_VERSION);
                 const tx = db.transaction([STORE_PENDING_REGISTRATIONS, STORE_OFFLINE_IMAGES], 'readwrite');
                 await tx.objectStore(STORE_PENDING_REGISTRATIONS).delete(dbKey);
-                
                 if (fullRegistrationData.step1?.photoId) {
                     await tx.objectStore(STORE_OFFLINE_IMAGES).delete(fullRegistrationData.step1.photoId);
                     console.log(`Image ID ${fullRegistrationData.step1.photoId} removed from IndexedDB`);
                 }
-                
                 await tx.done;
                 console.log(`Registration ID ${dbKey} cleaned up from IndexedDB`);
             }
-            
             return true;
         } else {
             const errorResponse = await response.json();
             console.error('Server rejected submission:', response.status, errorResponse);
-            
-            // Handle duplicate mobile number error from server
             if (errorResponse.error_type === 'duplicate_mobile') {
                 if (dbKey) {
                     await removeDuplicateFromOffline(mobileNumber);
                 }
                 throw new Error(errorResponse.message);
             }
-            
             return false;
         }
-        
     } catch (error) {
         console.error('Error in processAndSendRegistration:', error);
         throw error;
     }
 }
 
-// Updated handleNextSubmit for step 1 with mobile number validation
 async function handleNextSubmit(event) {
     event.preventDefault();
 
@@ -1418,56 +1392,61 @@ async function handleNextSubmit(event) {
     let currentRegistration = await getCurrentRegistrationData();
     let stepData = {};
 
-    // ... existing helper functions remain the same ...
-
-    // Clear any previous invalid states
+    function getFieldValue(name) {
+        const element = form.querySelector(`[name="${name}"]`);
+        if (!element) return null;
+        if (element.type === 'checkbox' || element.type === 'radio') {
+            const selected = form.querySelector(`[name="${name}"]:checked`);
+            return selected ? selected.value : (element.type === 'checkbox' ? element.checked : '');
+        }
+        if (element.tagName === 'SELECT') { return element.value; }
+        return element.value.trim();
+    }
+    function getCheckboxValues(name) {
+        const checkboxes = form.querySelectorAll(`input[name="${name}"]:checked`);
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+    
     form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
     if (currentStep === 1) {
         const requiredFields = ['full_name', 'mobile_number', 'taluka', 'village', 'category'];
         requiredFields.forEach(fieldName => {
             const field = form.querySelector(`[name="${fieldName}"]`);
-            if (field) {
-                if (!getFieldValue(fieldName)) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                }
+            if (field && !getFieldValue(fieldName)) {
+                field.classList.add('is-invalid');
+                isValid = false;
             }
         });
 
-        // Special validation for mobile number
         const mobileNumber = getFieldValue('mobile_number');
-        if (mobileNumber) {
-            if (!validateMobileNumber(mobileNumber)) {
-                showMobileNumberError('Please enter a valid 10-digit mobile number');
+        if (mobileNumber && !validateMobileNumber(mobileNumber)) {
+            showMobileNumberError('Please enter a valid 10-digit mobile number');
+            isValid = false;
+        } else if (mobileNumber && navigator.onLine) {
+            const duplicateCheck = await checkMobileNumberDuplicate(mobileNumber);
+            if (duplicateCheck.exists) {
+                showMobileNumberError('This mobile number is already registered. Please use a different number.');
                 isValid = false;
-            } else if (navigator.onLine) {
-                // Check for duplicate online
-                const duplicateCheck = await checkMobileNumberDuplicate(mobileNumber);
-                if (duplicateCheck.exists) {
-                    showMobileNumberError('This mobile number is already registered. Please use a different number.');
-                    isValid = false;
-                    
-                    // Show popup
-                    setTimeout(() => {
-                        alert('This mobile number is already registered. Please change the number to continue.');
-                        document.querySelector('[name="mobile_number"]').focus();
-                    }, 100);
-                }
+                setTimeout(() => {
+                    alert('This mobile number is already registered. Please change the number to continue.');
+                    document.querySelector('[name="mobile_number"]').focus();
+                }, 100);
             }
         }
 
         const capturedPhotoHiddenInput = document.getElementById('captured_photo_hidden');
         const uploadedPhotoFiles = document.querySelector('input[name="photo"]').files;
 
-        if (!capturedPhotoHiddenInput.value && uploadedPhotoFiles.length === 0 && !photoBlob) {
-            if (!confirm('No photo was captured or uploaded. A photo helps with verification and improves your chances of getting work. Do you want to continue without a photo?')) {
+        // More robust check for photo validity
+        const photoAvailable = !!(capturedPhotoHiddenInput.value || uploadedPhotoFiles.length > 0 || photoBlob);
+        if (!photoAvailable) {
+            if (!confirm('No photo was captured or uploaded. Do you want to continue without a photo?')) {
                 isValid = false;
             }
         } else if (capturedPhotoHiddenInput.value) {
             const photoConfirmedDiv = document.getElementById('photo-confirmed');
             const photoPreviewDiv = document.getElementById('photo-preview');
-
             if (photoPreviewDiv.style.display !== 'none' && photoConfirmedDiv.style.display === 'none') {
                 alert('Please confirm your photo by clicking "Use This Photo" or retake it if you\'re not satisfied.');
                 isValid = false;
@@ -1478,7 +1457,7 @@ async function handleNextSubmit(event) {
         const latitude = document.getElementById('latitude_hidden').value;
         const longitude = document.getElementById('longitude_hidden').value;
         if (!latitude || !longitude) {
-            if (!confirm('Location was not captured. This may affect service quality. Do you want to continue without location?')) {
+            if (!confirm('Location was not captured. Do you want to continue without location?')) {
                 isValid = false;
             }
         }
@@ -1491,7 +1470,29 @@ async function handleNextSubmit(event) {
             }
             return;
         }
+        
+        // **CRUCIAL CHANGE:** Save image BEFORE saving the form data
+        let imageId = null;
+        if (photoBlob) {
+            console.log('Attempting to save photoBlob to IndexedDB:', photoBlob);
+            try {
+                imageId = await saveImageBlob(photoBlob, 'captured_image.jpeg', photoBlob.type);
+                console.log('Successfully saved image to IndexedDB with ID:', imageId);
+            } catch (e) {
+                console.error('Error saving image blob to IndexedDB:', e);
+            }
+        } else if (uploadedPhotoFiles.length > 0) {
+            const uploadedFile = uploadedPhotoFiles[0];
+            console.log('Attempting to save uploaded file to IndexedDB:', uploadedFile);
+            try {
+                imageId = await saveImageBlob(uploadedFile, uploadedFile.name, uploadedFile.type);
+                console.log('Successfully saved uploaded file to IndexedDB with ID:', imageId);
+            } catch (e) {
+                console.error('Error saving uploaded file to IndexedDB:', e);
+            }
+        }
 
+        // Now, collect stepData and include the imageId if available
         stepData = {
             full_name: getFieldValue('full_name'),
             mobile_number: getFieldValue('mobile_number'),
@@ -1504,32 +1505,16 @@ async function handleNextSubmit(event) {
                 accuracy: parseFloat(document.getElementById('location_accuracy_hidden').value),
                 timestamp: new Date().toISOString()
             } : null,
-            photoId: null,
-            photoBase64: null
+            photoId: imageId, // Link the form data to the image ID
+            photoBase64: capturedPhotoHiddenInput.value // Keep this as a fallback
         };
-
-        let imageId = null;
-        if (photoBlob) {
-            imageId = await saveImageBlob(photoBlob, 'captured_image.jpeg', photoBlob.type);
-            stepData.photoId = imageId;
-            stepData.photoBase64 = null;
-        } else if (uploadedPhotoFiles.length > 0) {
-            const uploadedFile = uploadedPhotoFiles[0];
-            imageId = await saveImageBlob(uploadedFile, uploadedFile.name, uploadedFile.type);
-            stepData.photoId = imageId;
-            stepData.photoBase64 = null;
-        } else if (capturedPhotoHiddenInput.value) {
-            stepData.photoBase64 = capturedPhotoHiddenInput.value;
-        }
 
         currentRegistration.step1 = stepData;
         await saveCurrentRegistrationData(currentRegistration);
 
         const categoryToPass = stepData.category;
         window.location.href = `?step=${currentStep + 1}&current_category_from_db=${encodeURIComponent(categoryToPass)}`;
-
-    } else if (currentStep === 2) {
-        // ... existing step 2 validation code remains the same ...
+    }  else if (currentStep === 2) {
         const categoryFromStep1 = currentRegistration.step1 ? currentRegistration.step1.category : '';
         const currentCategory = document.getElementById('currentCategorySession').value || categoryFromStep1;
 
@@ -1590,18 +1575,6 @@ async function handleNextSubmit(event) {
                     isValid = false;
                 }
             }
-
-            // const adultMen = parseInt(document.querySelector('[name="adult_men_seeking_employment"]').value) || 0;
-            // const adultWomen = parseInt(document.querySelector('[name="adult_women_seeking_employment"]').value) || 0;
-            // if (adultMen < 0) {
-            //     document.querySelector('[name="adult_men_seeking_employment"]').classList.add('is-invalid');
-            //     isValid = false;
-            // }
-            // if (adultWomen < 0) {
-            //     document.querySelector('[name="adult_women_seeking_employment"]').classList.add('is-invalid');
-            //     isValid = false;
-            // }
-
         } else if (currentCategory === 'mukkadam') {
             const skillCheckboxes = getCheckboxValues('skills');
             if (skillCheckboxes.length === 0) {
@@ -1654,7 +1627,9 @@ async function handleNextSubmit(event) {
         } else if (currentCategory === 'transport') {
             stepData = {
                 vehicle_type: getFieldValue('vehicle_type'), people_capacity: parseInt(getFieldValue('people_capacity')) || null, expected_fair: getFieldValue('expected_fair'),
-                availability: getFieldValue('availability'), service_areas: getFieldValue('service_areas'),
+                availability: getFieldValue('availability'), 
+                // FIX: Use getCheckboxValues for the checkboxes
+                service_areas: getCheckboxValues('service_areas'),
             };
         } else if (currentCategory === 'others') {
             stepData = {
