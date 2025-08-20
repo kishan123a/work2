@@ -1,73 +1,20 @@
-# Use official Python image
-FROM python:3.12
+FROM python:3.12-slim
 
-# Set work directory
-WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Install GDAL and other system dependencies
+# Install system dependencies required for GDAL
 RUN apt-get update && apt-get install -y \
     gdal-bin \
     libgdal-dev \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Environment variable for GDAL
-ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-ENV C_INCLUDE_PATH=/usr/include/gdal
+WORKDIR /app
 
-# Copy and install Python dependencies
-COPY requirements.txt /app/
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install gunicorn
+COPY requirements.txt .
+RUN pip install --no-cache-dir gunicorn -r requirements.txt
 
-# Copy the project files (this also copies startup.sh)
-COPY . /app/
+COPY . .
 
-# Make the startup script executable
 RUN chmod +x /app/startup.sh
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
-# Expose the port for internal communication
-EXPOSE 8000
-
-# Set the startup script as the command to run
-CMD ["/app/startup.sh"]
-# # Use official Python image
-# FROM python:3.12
-
-# # Set work directory
-# WORKDIR /app
-
-# # Install GDAL and other system dependencies
-# RUN apt-get update && apt-get install -y \
-#     gdal-bin \
-#     libgdal-dev \
-#     build-essential \
-#     && rm -rf /var/lib/apt/lists/*
-
-# ARG DATABASE_URL
-
-# ENV DATABASE_URL=$DATABASE_URL
-# # Environment variable for GDAL
-# ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-# ENV C_INCLUDE_PATH=/usr/include/gdal
-
-# # Copy and install Python dependencies
-# COPY requirements.txt /app/
-# RUN pip install --upgrade pip setuptools wheel
-# RUN pip install --no-cache-dir -r requirements.txt
-
-# # Copy the project files
-# COPY . /app/
-
-# # Collect static files
-# RUN python manage.py collectstatic --noinput
-
-# # Expose the port
-# EXPOSE 8000
-
-# # Run Django with Gunicorn
-# CMD  python manage.py migrate && gunicorn labour_crm.wsgi:application --bind 0.0.0.0:8000

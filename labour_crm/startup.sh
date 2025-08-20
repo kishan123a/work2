@@ -1,23 +1,14 @@
-FROM python:3.12
+#!/bin/bash
+set -e
 
-WORKDIR /app
+echo "Applying database migrations..."
+python manage.py migrate
 
-RUN apt-get update && apt-get install -y \
-    gdal-bin \
-    libgdal-dev \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+echo "Collecting static files..."
+python manage.py collectstatic --no-input --clear
 
-ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-ENV C_INCLUDE_PATH=/usr/include/gdal
+echo "Creating initial superuser..."
+python manage.py create_initial_superuser
 
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . /app/
-
-RUN chmod +x /app/startup.sh
-
-RUN python manage.py collectstatic --noinput
-
-CMD ["/app/startup.sh"]
+echo "Starting Gunicorn server..."
+exec gunicorn labour_crm.wsgi:application --bind 0.0.0.0:8000
