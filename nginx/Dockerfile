@@ -1,4 +1,4 @@
-# Stage 1: Build the React app from your 'frontend' folder
+  GNU nano 7.2                  nginx/dockerfile                            # Stage 1: Build the React app from your 'frontend' folder
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY ../frontend/package.json ../frontend/package-lock.json* ./
@@ -10,3 +10,8 @@ RUN npm run build
 FROM nginx:stable-alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+
+
+
+

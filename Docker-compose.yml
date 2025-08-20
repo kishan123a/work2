@@ -1,4 +1,4 @@
-version: '3.8'
+  GNU nano 7.2                 docker-compose.yml                           version: '3.8'
 
 services:
   backend:
@@ -11,18 +11,17 @@ services:
       # --- IMPORTANT: Fill in your secrets here ---
       - SECRET_KEY=fruwiuuiiuhUUIHFE(*&^&%^**(*&%$$^&&*^$$##$))
       - DEBUG=0
-      - ALLOWED_HOSTS=13.232.203.123,backend #<-- Your server IP
+      - ALLOWED_HOSTS=65.0.130.228,backend #<-- Your server IP
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=bhatikarn634@gmail.com
       - DJANGO_SUPERUSER_PASSWORD=z0k5NgbdYn5f8szqKSXx
 
-      
+
       # --- Credentials for your SINGLE AWS RDS Database ---
       - POSTGRES_DB=supplysidelabourdbnew
       - POSTGRES_USER=supplysidelabour
       - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
-      - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com
-
+      - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaw>
   nginx:
     build:
       context: .
