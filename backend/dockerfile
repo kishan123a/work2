@@ -26,4 +26,4 @@ RUN chmod +x /app/startup.sh
 
 CMD ["/app/startup.sh"]
 
-# The CMD or ENTRYPOINT command to run your app will go here, or in your do>
+

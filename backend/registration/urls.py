@@ -27,7 +27,7 @@ urlpatterns = [
     path('leader/notification/<int:notification_id>/read/', views.mark_notification_read_and_redirect_view, name='read_notification'),
     path('leader/job/<int:job_id>/confirm-start/', views.leader_confirm_start_view, name='leader_confirm_start'),
     path('leader/job/<int:job_id>/cancel-job/', views.leader_cancel_job_view, name='leader_cancel_job'),
-    path('leader/job/<int:job_id>/can-not-find-team/', views.leader_reject_job_view, name='leader_reject_job_view'),
+    # path('leader/job/<int:job_id>/can-not-find-team/', views.leader_reject_job_view, name='leader_reject_job_view'),
     path('leader/dashboard/', views.leader_new_requests_view, name='leader_dashboard'),
     
 
