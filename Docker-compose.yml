@@ -25,6 +25,7 @@ services:
       - POSTGRES_USER=supplysidelabour
       - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
       - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com 
+  nginx:
     build:
       context: .
       dockerfile: nginx/Dockerfile
