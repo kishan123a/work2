@@ -15,7 +15,8 @@ services:
       # --- IMPORTANT: Fill in your secrets here ---
       - SECRET_KEY=fruwiuuiiuhUUIHFE(*&^&%^**(*&%$$^&&*^$$##$))
       - DEBUG=0
-      - ALLOWED_HOSTS=65.2.178.170,kishan.kisanmitra.ai,backend #<-- Your s>      - DJANGO_SUPERUSER_USERNAME=admin
+      - ALLOWED_HOSTS=65.2.178.170,kishan.kisanmitra.ai,backend #<-- Your server IP
+      - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=bhatikarn634@gmail.com
       - DJANGO_SUPERUSER_PASSWORD=z0k5NgbdYn5f8szqKSXx
 
@@ -24,7 +25,7 @@ services:
       - POSTGRES_DB=supplysidelabourdbnew
       - POSTGRES_USER=supplysidelabour
       - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
-      - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com 
+      - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com
   nginx:
     build:
       context: .
@@ -34,7 +35,6 @@ services:
       # ADDED THESE TWO LINES for static and media files
       - staticfiles_volume:/app/staticfiles:ro
       - media_volume:/app/media:ro
-
     ports:
       - "80:80"
       - "443:443"
@@ -43,53 +43,3 @@ services:
 volumes:
   staticfiles_volume:
   media_volume:
-
-# version: '3.8'
-
-# services:
-#   # Django backend service
-#   backend:
-#     build: ./backend
-#     command: /app/startup.sh
-#     restart: always
-#     expose:
-#       - "8000"
-#     volumes:
-#       # Volumes for sharing static and media files with Nginx
-#       - staticfiles_volume:/app/staticfiles
-#       - media_volume:/app/media
-#     environment:
-#       # --- Your secrets and settings ---
-#       - SECRET_KEY=fruwiuuiiuhUUIHFE(*&^&%^**(*&%$$^&&*^$$##$))
-#       - DEBUG=0
-#       - ALLOWED_HOSTS=3.110.128.132,kishan.kisanmitra.ai,backend # CORRECTED THIS LINE
-#       - DJANGO_SUPERUSER_USERNAME=admin
-#       - DJANGO_SUPERUSER_EMAIL=bhatikarn634@gmail.com
-#       - DJANGO_SUPERUSER_PASSWORD=z0k5NgbdYn5f8szqKSXx
-
-#       # --- Credentials for your SINGLE AWS RDS Database ---
-#       - POSTGRES_DB=supplysidelabourdbnew
-#       - POSTGRES_USER=supplysidelabour
-#       - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
-#       - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com
-
-#   # Nginx reverse proxy
-#   nginx:
-#     build:
-#       context: .
-#       dockerfile: nginx/Dockerfile
-#     ports:
-#       - "80:80"
-#       - "443:443"  # ADDED THIS LINE for HTTPS
-#     restart: always
-#     volumes:
-#       # ADDED THESE TWO LINES for static and media files
-#       - staticfiles_volume:/app/staticfiles:ro
-#       - media_volume:/app/media:ro
-#     depends_on:
-#       - backend
-
-# # --- ADDED THIS SECTION to define the volumes ---
-# volumes:
-#   staticfiles_volume:
-#   media_volume:

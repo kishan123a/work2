@@ -22,8 +22,8 @@ RUN pip install --no-cache-dir gunicorn && \
 COPY . .
 
 # Make startup script executable
-RUN chmod +x /app/startup.sh
+RUN chmod +x startup.sh
 
-CMD ["/app/startup.sh"]
+CMD ["./startup.sh"]
 
 

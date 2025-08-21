@@ -323,7 +323,7 @@ PWA_APP_DESCRIPTION = "AgroIntel - Connecting Farmers with Labours"
 PWA_APP_THEME_COLOR = '#2196f3'
 PWA_APP_BACKGROUND_COLOR = '#e3f2fd'
 PWA_APP_DISPLAY = 'standalone'
-PWA_APP_SCOPE = '/'
+PWA_APP_SCOPE = '/register/registration/'
 PWA_APP_START_URL = '/register/registration/'
 PWA_APP_ICONS = [
     {'src': '/static/images/android-chrome-192x192.png', 'sizes': '192x192'},
