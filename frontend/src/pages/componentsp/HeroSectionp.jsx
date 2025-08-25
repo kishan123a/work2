@@ -51,7 +51,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="bg-gradient-to-br from-muted/30 to-background py-16 lg:py-24 overflow-hidden"> {/* Added overflow-hidden */}
+    <section id = "hero" className="bg-gradient-to-br from-muted/30 to-background py-16 lg:py-24 overflow-hidden"> {/* Added overflow-hidden */}
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}

@@ -44,6 +44,7 @@ const ServiceCard = ({ title, description, isFeatured = false, onMouseEnter, onM
 
   return (
     <div
+    
       className={`p-6 sm:p-8 shadow-xl rounded-xl flex flex-col justify-center items-start gap-4 sm:gap-6
         transition-all duration-300 ease-in-out cursor-pointer
         ${cardBgClass}
@@ -136,7 +137,7 @@ const ServicesSection = () => {
 
   return (
     <section
-    id = 'services'
+    id = 'Services'
       ref={sectionRef} // Attach ref for overall section visibility
       className={`bg-white py-16 px-4 sm:px-6 lg:px-24`}
     >

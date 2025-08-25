@@ -89,7 +89,7 @@ const HeroSection = () => {
         backgroundPosition: 'top center' // Keep the top of the image visible
       }}
     >
-      <Headers /> {/* Render the Header component */}
+       {/* Render the Header component */}
 
       <div className="flex flex-col items-center justify-center gap-4 sm:gap-6 mt-32 text-center px-4 sm:px-0">
         <h1 className="text-4xl sm:text-6xl lg:text-8xl font-bold leading-tight max-w-full lg:max-w-5xl">

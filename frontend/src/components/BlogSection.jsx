@@ -41,6 +41,7 @@ const BlogModal = ({ post, onClose }) => {
 
     return (
         <div 
+        id = 'Blogs'
             className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4 transition-opacity duration-300"
             onClick={onClose} // Close modal on overlay click
         >

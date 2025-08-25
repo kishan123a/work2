@@ -9,17 +9,35 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+
 from datetime import datetime, timedelta
 import json
 import csv
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
 
 from .models import IndividualLabor, Mukkadam, Transport, Others
+def dashboard_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect("registration:dashboard")
+ # redirect to dashboard
+    else:
+        form = AuthenticationForm()
 
-@method_decorator(staff_member_required, name='dispatch')
+    return render(request, "dashboard/login.html", {"form": form})
+# @method_decorator(staff_member_required, name='dispatch')
+@method_decorator(login_required(login_url="dashboard:login"), name='dispatch')
 class DashboardView(View):
     template_name = 'registration/dashboard.html'
 
-    def get(self, request):
+    def get(self, request,*args, **kwargs):
         # Get overall statistics
         stats = self.get_overall_stats()
 
@@ -229,7 +247,7 @@ class DashboardView(View):
 
         return locations
 
-@method_decorator(staff_member_required, name='dispatch')
+@method_decorator(login_required(login_url="dashboard:login"), name='dispatch')
 class CategoryDetailView(View):
     template_name = 'registration/category_detail.html'
 
@@ -337,7 +355,6 @@ class CategoryDetailView(View):
             })
 
         return stats
-
 @staff_member_required
 def export_data(request, category=None):
     """Export registration data as CSV"""
@@ -417,7 +434,7 @@ def export_data(request, category=None):
 
     return response
 
-@staff_member_required
+@method_decorator(login_required(login_url="dashboard:login"), name='dispatch')
 def dashboard_api(request):
     """API endpoint for dashboard data"""
     action = request.GET.get('action')

@@ -246,11 +246,11 @@ const ContactSection = () => {
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6 sm:gap-8">
             {/* Your existing form fields remain the same */}
             <div className="flex flex-col gap-3 sm:gap-4 w-full">
-              <label htmlFor="fullName" className="text-white text-base sm:text-xl font-semibold leading-6">Full name</label>
+              <label htmlFor="fullName" className="text-white text-base sm:text-xl font-semibold leading-6">Full name *</label>
               <input
                 type="text"
                 id="fullName"
-                placeholder="Enter your full name"
+                placeholder="Enter your full name *"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="w-full p-3 sm:p-4 rounded-full border border-white bg-transparent text-white placeholder-white outline-none focus:ring-2 focus:ring-white text-sm sm:text-base"
@@ -259,11 +259,11 @@ const ContactSection = () => {
             </div>
             
             <div className="flex flex-col gap-3 sm:gap-4 w-full">
-              <label htmlFor="email" className="text-white text-base sm:text-xl font-semibold leading-6">Email</label>
+              <label htmlFor="email" className="text-white text-base sm:text-xl font-semibold leading-6">Email *</label>
               <input
                 type="email"
                 id="email"
-                placeholder="Enter your email"
+                placeholder="Enter your email *"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 sm:p-4 rounded-full border border-white bg-transparent text-white placeholder-white outline-none focus:ring-2 focus:ring-white text-sm sm:text-base"
@@ -272,10 +272,10 @@ const ContactSection = () => {
             </div>
             
             <div className="flex flex-col gap-3 sm:gap-4 w-full">
-              <label htmlFor="message" className="text-white text-base sm:text-xl font-semibold leading-6">Message</label>
+              <label htmlFor="message" className="text-white text-base sm:text-xl font-semibold leading-6">Message *</label>
               <textarea
                 id="message"
-                placeholder="Enter your message"
+                placeholder="Enter your message *"
                 rows="4"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}

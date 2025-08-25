@@ -42,7 +42,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, isVisible, animationDirect
 
   return (
     <div
-    id = 'faq'
+   
       className={`w-full p-8 shadow-xl rounded-xl cursor-pointer
         transition-all duration-700 ease-out
         ${itemBgClass}

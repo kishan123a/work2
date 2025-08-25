@@ -12,10 +12,12 @@ import FAQSection from './components/FAQSection';
 import BlogSection from './components/BlogSection';
 import ContactSection from './components/ContectSection';
 import Footer from './components/Footer';
+import Header from './components/Headers';
 
 function App() {
   return (
     <div className="App">
+      <Header />
       <HeroSection />
       <AboutSection />
       {/* <WhyChooseUsSection /> */}

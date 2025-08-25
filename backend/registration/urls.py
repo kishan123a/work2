@@ -1,7 +1,7 @@
 # registration/urls.py
 from django.urls import path
 from . import views
-from .dashboard_views import DashboardView, CategoryDetailView, export_data, dashboard_api
+from .dashboard_views import DashboardView,dashboard_login, CategoryDetailView, export_data, dashboard_api
 
 app_name = 'registration'
 
@@ -82,6 +82,7 @@ urlpatterns = [
 
 
     # Dashboard URLs
+     path('dashboard/login', dashboard_login, name='dashboard'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('dashboard/category/<str:category>/', CategoryDetailView.as_view(), name='category_detail'),
     path('dashboard/export/', export_data, name='export_all'),

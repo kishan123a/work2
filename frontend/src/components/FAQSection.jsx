@@ -42,7 +42,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, isVisible, animationDirect
 
   return (
     <div
-    id = 'faq'
+   
       className={`w-full p-8 shadow-xl rounded-xl cursor-pointer
         transition-all duration-700 ease-out
         ${itemBgClass}
@@ -140,6 +140,7 @@ const FAQSection = () => {
 
   return (
     <section
+     id = 'Faq'
       ref={sectionRef} // Attach ref for overall section visibility
       className={`bg-white py-16 px-4 sm:px-6 lg:px-24`}
     >

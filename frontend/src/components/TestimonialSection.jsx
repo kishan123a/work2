@@ -30,7 +30,7 @@ function useSectionVisibility(threshold = 0.2) {
 // StarRating Component (reusable for displaying stars)
 const StarRating = ({ rating, totalStars = 5, filledColor = 'text-yellow-400', emptyColor = 'text-gray-300' }) => {
   return (
-    <div className="flex items-center">
+    <div id = "Testimonials" className="flex items-center">
       {[...Array(totalStars)].map((_, i) => (
         <svg
           key={i}
