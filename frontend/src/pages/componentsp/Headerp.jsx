@@ -32,12 +32,12 @@ useEffect(() => {
 
 
   return (
-     <header className="fixed top-0 left-0 w-full px-4 sm:px-6 lg:px-24 py-6 border-b border-white flex justify-between items-center z-50">
-      {/* Logo */}
-       <a
-        href="#hero"
-        className="text-black text-xl sm:text-2xl lg:text-3xl font-semibold leading-tight"
-      >AgroIntel</a> {/* Adjusted font size for responsiveness */}
+      <header className="fixed top-0 left-0 w-full px-4 sm:px-6 lg:px-24 py-4 flex justify-between items-center z-50 
+                     bg-gradient-to-t from-black/50 to-transparent backdrop-blur-sm"> {/* Logo */}
+       <a href="#hero">
+        <img src="l.png" alt="Company Logo" className="max-w-[135px]" />
+      </a>
+{/* Adjusted font size for responsiveness */}
 
       {/* Desktop Navigation (hidden on small screens) */}
       <nav className="hidden md:flex items-center space-x-8 lg:space-x-12">

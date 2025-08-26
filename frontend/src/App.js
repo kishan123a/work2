@@ -13,6 +13,7 @@ import BlogSection from './components/BlogSection';
 import ContactSection from './components/ContectSection';
 import Footer from './components/Footer';
 import Header from './components/Headers';
+import EndorsementSection from './components/EndorsementSection';
 
 function App() {
   return (
@@ -24,9 +25,10 @@ function App() {
       <ServiceSection />
       {/* <PricingSection /> */}
       {/* <GallerySection /> */}
-      <TestimonialsSection />
+      {/* <TestimonialsSection /> */}
+      <EndorsementSection/>
       <FAQSection />
-      <BlogSection />
+      {/* <BlogSection /> */}
       <ContactSection />
       <Footer />
     </div>

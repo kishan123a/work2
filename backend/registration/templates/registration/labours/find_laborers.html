@@ -19,13 +19,19 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmTeamModal">
                 <i class="fas fa-check me-2"></i>Finalize & Send Response
             </button>
-             <form action="{% url 'registration:leader_reject_job_view' job.id %}" method="POST" class="d-grid gap-2">
+             <!-- <form action="{% url 'registration:leader_reject_job_view' job.id %}" method="POST" class="d-grid gap-2">
                     {% csrf_token %}
                    
             <button type="submit" name="reject_job" class="btn btn-outline-danger">
                 <i class="fas fa-times me-2"></i>Cannot Form Team
             </button>
-            </form>
+            </form> -->
+           <a href = "{% url 'registration:leader_reject_job_view' job.id %}" method="POST" class="mb-0">
+            {% csrf_token %}
+            <button type="submit" name="reject_job" class="btn btn-outline-danger">
+                <i class="fas fa-times me-2"></i>Cannot Form Team
+            </button>
+            </a>
         </div>
     </div>
 

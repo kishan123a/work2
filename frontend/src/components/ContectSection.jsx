@@ -220,7 +220,7 @@ const ContactSection = () => {
           <span className="text-green-600">Contact</span> Us
         </h2>
         <p className="text-base font-medium leading-6 text-gray-600 max-w-full lg:max-w-none">
-          We are looking for partners to help us transform labour across Bharat.
+          We are looking for partners to help us transform rural livelihoods.
         </p>
       </div>
 

@@ -77,18 +77,23 @@ const HeroSection = () => {
 
   return (
     <section
-      id='hero'
-      ref={sectionRef}
-      className={`relative w-full min-h-screen bg-cover bg-center flex flex-col items-center justify-center text-white p-4 sm:p-6 lg:p-0
-        transition-all duration-1000 ease-out
-        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
-      `}
-      style={{
-        backgroundImage: 'linear-gradient(0deg, rgba(58, 58, 58, 0.42) 0%, rgba(58, 58, 58, 0.42) 100%), url(IMG-20250730-WA0010.jpg)',
-        // This is the new part
-        backgroundPosition: 'top center' // Keep the top of the image visible
-      }}
-    >
+  id="hero"
+  ref={sectionRef}
+  className={`relative w-full min-h-screen bg-cover bg-center flex flex-col items-center justify-center text-white 
+    overflow-hidden  /* ✅ Prevents children from causing scroll */
+    p-4 sm:p-6 lg:p-0
+    transition-all duration-1000 ease-out
+    ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
+  `}
+  style={{
+    backgroundImage:
+      'linear-gradient(0deg, rgba(58, 58, 58, 0.42) 0%, rgba(58, 58, 58, 0.42) 100%), url(IMG-20250730-WA0010.jpg)',
+    backgroundPosition: 'top center',
+    backgroundSize: 'cover', // ✅ ensures no weird tiling
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+
        {/* Render the Header component */}
 
       <div className="flex flex-col items-center justify-center gap-4 sm:gap-6 mt-32 text-center px-4 sm:px-0">
@@ -96,18 +101,18 @@ const HeroSection = () => {
           Building Bharat’s Workforce
         </h1>
         <p className="text-sm sm:text-base font-medium leading-6 max-w-full lg:max-w-2xl">
-          Connecting horticulture farmers with skilled labour.
+          Empowering Farmers, Enabling Labour.
         </p>
       </div>
 
       {/* Buttons: Now always in one row with reduced spacing on small screens */}
       <div className="flex flex-row justify-center items-center gap-2 sm:gap-4 lg:gap-10 mt-12 sm:mt-16 px-2 sm:px-0 xl:mt-12"> {/* Changed flex-col sm:flex-row to flex-row and reduced gap/padding */}
         <button className="px-4 py-3 sm:px-6 sm:py-4 lg:px-10 lg:py-8 bg-brandGreen rounded-full text-white text-xs sm:text-base lg:text-xl font-semibold leading-6 text-center shadow-md hover:bg-teal-700 transition-colors duration-300 flex-shrink-0"> {/* Reduced padding and font size, added flex-shrink-0 */}
-          <a href = "#contact">Get Labour Now</a>
+          <a href = "#contact">Book Labour</a>
         </button>
          <Link to="/partner-us">
         <button className="px-4 py-3 sm:px-6 sm:py-4 lg:px-10 lg:py-8 bg-white rounded-full text-brandGreen text-xs sm:text-base lg:text-xl font-semibold leading-6 text-center shadow-md hover:bg-gray-100 transition-colors duration-300 flex-shrink-0"> {/* Reduced padding and font size, added flex-shrink-0 */}
-        Partner With Us{/* <a href = "https://remarkable-faloodeh-001911.netlify.app/" >Partner With Us</a>  */}
+        Join as a Worker{/* <a href = "https://remarkable-faloodeh-001911.netlify.app/" >Partner With Us</a>  */}
         </button>
         </Link>
       </div>
@@ -120,28 +125,28 @@ const HeroSection = () => {
             <span className="text-brandGreen">+</span>
           </div>
           <div className="text-[0.6rem] sm:text-xs lg:text-base font-medium leading-3 sm:leading-4 lg:leading-6 text-gray-600 text-center">
-            Tehsils Covered
+            Crops
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-0.5 flex-1 p-1">
           <div className="text-xl sm:text-3xl lg:text-5xl font-semibold leading-tight text-gray-900 text-center">
-            <AnimatedCounter endValue={2} />K<span className="text-brandGreen">+</span>
+            <AnimatedCounter endValue={10} />K<span className="text-brandGreen">+</span>
           </div>
           <div className="text-[0.6rem] sm:text-xs lg:text-base font-medium leading-3 sm:leading-4 lg:leading-6 text-gray-600 text-center">
-            Labourers Onboarded
+            Labourers
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-0.5 flex-1 p-1">
           <div className="text-xl sm:text-3xl lg:text-5xl font-semibold leading-tight text-gray-900 text-center">
-            <AnimatedCounter endValue={5} />K<span className="text-brandGreen">+</span>
+            <AnimatedCounter endValue={25} />K<span className="text-brandGreen">+</span>
           </div>
           <div className="text-[0.6rem] sm:text-xs lg:text-base font-medium leading-3 sm:leading-4 lg:leading-6 text-gray-600 text-center">
-            Farmers Served
+            Farmers
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-0.5 flex-1 p-1">
           <div className="text-xl sm:text-3xl lg:text-5xl font-semibold leading-tight text-gray-900 text-center">
-            <AnimatedCounter endValue={14} />
+            <AnimatedCounter endValue={64} />
             <span className="text-brandGreen">K</span>
           </div>
           <div className="text-[0.6rem] sm:text-xs lg:text-base font-medium leading-3 sm:leading-4 lg:leading-6 text-gray-600 text-center">

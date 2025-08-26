@@ -77,31 +77,32 @@ const FAQSection = () => {
 
   const faqs = [
     {
-      id: 1, // Added ID for consistent key and state tracking
-      question: 'Do you provide labour for all crops?',
-      answer: 'No! We currently provide labour only for grape farmers in Maharashtra.',
+      id: 1,
+      question: "Where is your service available?",
+      answer: "We currently provide labour support for horticulture farmers across Western Maharashtra.",
     },
     {
       id: 2,
-      question: 'How do I book labour?',
-      answer: 'Simply WhatsApp us or call our helpline.',
+      question: "How can I book labour?",
+      answer: "Bookings are simple: just send us a WhatsApp message or use our booking form. Share the task, date, and location — our team will confirm and assign workers.",
     },
     {
       id: 3,
-      question: 'How do workers get paid?',
-      answer: 'Farmers pay digitally; labourers receive wages instantly.',
+      question: "How are workers paid?",
+      answer: "Farmers pay digitally through our system, and workers receive their wages quickly and transparently — no delays, no middlemen.",
     },
     {
       id: 4,
-      question: 'Can you arrange transport for workers?',
-      answer: 'Yes, we manage all logistics.',
+      question: "Do you provide transport for workers?",
+      answer: "Yes. We arrange safe, door-to-farm transport so workers arrive fresh, on time, and ready for the job.",
     },
     {
       id: 5,
-      question: 'How do you ensure worker quality?',
-      answer: 'All workers are trained & verified.',
+      question: "How do you guarantee worker quality?",
+      answer: "All workers are verified and trained in crop-specific tasks. Our local supervisors monitor performance and run regular upskilling to ensure consistent quality.",
     },
   ];
+  
 
   useEffect(() => {
     if (sectionIsVisible) {
@@ -140,7 +141,7 @@ const FAQSection = () => {
 
   return (
     <section
-     id = 'Faq'
+     id = 'faq'
       ref={sectionRef} // Attach ref for overall section visibility
       className={`bg-white py-16 px-4 sm:px-6 lg:px-24`}
     >

@@ -95,34 +95,34 @@ const ServicesSection = () => {
   const services = [
     {
       id: 1,
-      title: "📋 Labour Booking",
-      description: "RReliable, skilled labour for pruning, harvesting, and spraying — whenever you need them.",
+      title: "📋 Sourcing & Booking",
+      description: "We match farmers with trained workers instantly — no scrambling, no delays.",
       isFeatured: true, // This card will be featured by default
     },
     {
       id: 2,
-      title: "👨‍🏫 Training & Upskilling",
-      description: "Crop-specific programs that turn labourers into craftsmen.",
+      title: "👨‍🏫 Training & Quality Control",
+      description: "We upskill workers crop by crop and ensure every task meets the highest standard.",
     },
     {
       id: 3,
-      title: "📍 On-Ground Support",
-      description: "Local mukadams and field teams keep tasks on track, quality high, and issues solved fast.",
+      title: "📍 Transport & Logistics",
+      description: "We manage door-to-farm transport, so workers arrive on time, ready to deliver.",
     },
     {
       id: 4,
-      title: "🚚 Transport & Logistics",
-      description: "Door-to-farm transport arranged end-to-end, so crews arrive fresh and on schedule.",
+      title: "🚚 On-Ground Execution",
+      description: "Supervisors enforce discipline, track progress, and fix issues fast.",
     },
     {
       id: 5,
-      title: "📲 Digital Records",
-      description: "Bookings, wages, and worker history — securely stored and searchable in one dashboard.",
+      title: "📲 Payments & Records",
+      description: "Wages, attendance, and bookings are tracked digitally — transparent, fair, and on time.",
     },
     {
       id: 6,
-      title: "📞 Indic Support",
-      description: "Book, reschedule, or get real-time updates in your local dialect.",
+      title: "📞 Welfare & Support",
+      description: "Housing, food, sanitation - keep workers content and farmers worry-free.",
     },
   ];
 
@@ -137,7 +137,7 @@ const ServicesSection = () => {
 
   return (
     <section
-    id = 'Services'
+    id = 'services'
       ref={sectionRef} // Attach ref for overall section visibility
       className={`bg-white py-16 px-4 sm:px-6 lg:px-24`}
     >
@@ -150,7 +150,7 @@ const ServicesSection = () => {
           Our labour solutions and <span className="text-brandGreen">services</span>
         </h2>
         <p className="text-base font-medium leading-6 text-gray-600 max-w-full lg:max-w-none">
-          From finding skilled hands to managing smooth operations — we take care of it all.
+          One platform. Every service connected.
         </p>
       </div>
 

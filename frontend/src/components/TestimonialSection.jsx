@@ -186,10 +186,10 @@ const TestimonialsSection = () => {
         ${headlineVisible ? visibleStateClassesY : hiddenStateClassesY}
       `}>
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight text-gray-900">
-          Hear it Through the <span className="text-brandGreen">Grape Vine</span>
+          Backed by <span className="text-brandGreen">Sahyadri Farms</span>
         </h2>
         <p className="text-base font-medium leading-6 text-gray-600 max-w-full lg:max-w-none">
-          Real voices on how we make labour simple, reliable, and stress‑free.
+        Backed by India’s largest farmer-owned company of 20,000+ growers, we are building the dependable workforce engine that powers Bharat’s horticulture ecosystem.
         </p>
       </div>
 

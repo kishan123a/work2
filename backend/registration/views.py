@@ -354,7 +354,14 @@ def mobile_number_exists(mobile_number):
         return True
     return False
  
-    return render(request, 'dashboard/login.html', {'form': form})
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been successfully logged out.")
+    # Redirect to the login page.
+    # Replace 'name_of_your_login_url' with the actual URL name for your login page.
+    return redirect('registration:login')
+    # After logout, redirect them back to the login page
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -362,32 +369,28 @@ def login_view(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
+
             if user is not None:
-                # --- START OF CHANGE ---
-                # Check if the authenticated user is a mukadam.
-                # Adjust the condition `user.is_mukadam` to match your model's field name.
-                # getattr() is used for a safe check in case the attribute doesn't exist.
-                if getattr(user, 'is_mukadam', False):
-                    login(request, user)
-                    # After successful login, redirect them to the dashboard
-                    return redirect('registration:leader_dashboard')
+                # --- START OF CORRECTED LOGIC ---
+                # Check if the user belongs to the 'Mukadams' group.
+                # This is the correct way to check for group membership.
+                if user.groups.filter(name='Mukadams').exists():
+                    # If they are in the group, show an error and PREVENT login.
+                    messages.error(request, "Access Denied: This login is not for Mukadams.")
                 else:
-                    # User is valid, but not a mukadam. Show an error.
-                    messages.error(request, "Access Denied: You do not have permission to log in here.")
-                # --- END OF CHANGE ---
+                    # The user is valid and NOT in the 'Mukadams' group, so log them in.
+                    login(request, user)
+                    # Redirect them to the correct dashboard.
+                    return redirect('registration:leader_dashboard') # CHANGE THIS URL
+                # --- END OF CORRECTED LOGIC ---
             else:
-                # This handles cases where username/password is incorrect.
                 messages.error(request, "Invalid username or password.")
         else:
-            # Form itself is invalid (e.g., empty fields)
             messages.error(request, "Invalid username or password.")
     else:
         form = AuthenticationForm()
-    return render(request, 'registration/login.html', {'form': form})
 
-def logout_view(request):
-    logout(request)
-    # After logout, redirect them back to the login page
+    return render(request, 'registration/login.html', {'form': form})
 
 
 @login_required
@@ -652,6 +655,45 @@ def leader_ongoing_jobs_view(request):
         'unread_count': unread_count,
     }
     return render(request, 'registration/leader/leader_ongoing_jobs.html', context)
+
+@login_required
+def leader_reject_job_view(request, job_id):
+    """
+    Allows a leader to reject a job offer, sending it back to the admin pool.
+    """
+    job = get_object_or_404(Job, id=job_id)
+    
+    if request.method == 'POST':
+        # Get the rejection message from the form
+        rejection_message = request.POST.get('rejection_message', 'Leader could not form a team.')
+
+        # 1. Un-assign the current leader from the job
+        # This assumes you have a ManyToManyField named 'assigned_leaders' on your Job model.
+        # If the field has a different name (like 'leader'), adjust accordingly.
+        job.assigned_leaders.remove(request.user)
+        
+        # 2. Set the job status back to 'pending' for the admin
+        job.status = 'pending'
+        
+        # 3. Add a response message for the admin to see
+        job.leader_response_message = f"Rejected by {request.user.get_full_name() or request.user.username}: {rejection_message}"
+        job.save()
+
+        # 4. Notify the admin about the rejection
+        admin_user = User.objects.filter(is_superuser=True).first()
+        if admin_user:
+            Notification.objects.create(
+                user=admin_user,
+                message=f"Leader {request.user.username} rejected the job '{job.title}'. It needs reallocation.",
+                job=job
+            )
+
+        messages.warning(request, f"You have rejected the job '{job.title}'. It has been returned to the admin.")
+        return redirect('registration:leader_dashboard') # Redirect leader to their dashboard
+
+    # If not a POST request, just redirect away
+    return redirect('registration:leader_dashboard')
+
 
 @login_required
 def find_laborers_view(request, job_id):

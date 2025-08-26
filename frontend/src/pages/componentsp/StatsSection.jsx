@@ -6,9 +6,9 @@ const StatsSection = () => {
   // Enhanced stats data: store numeric value separately for animation
   const stats = [
     {
-      display: "10,000+",
-      value: 50000, // Numeric value for animation
-      label: "Farmers across MH",
+      display: "25,000+",
+      value: 25000, // Numeric value for animation
+      label: "Farmers across Maharashtra",
       icon: "👥",
     },
     {
@@ -18,8 +18,8 @@ const StatsSection = () => {
       icon: "💰",
     },
     {
-      display: "2Lakh +",
-      value: 200000, // Numeric value for animation
+      display: "70000 +",
+      value: 70000, // Numeric value for animation
       label: "Acres of farmland",
       icon: "🚚",
     },

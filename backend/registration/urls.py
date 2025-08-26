@@ -63,7 +63,8 @@ urlpatterns = [
     # path('job/<int:job_id>/complete/', views.mark_job_complete, name='mark_job_complete'),
     path('job/<int:job_id>/live-status/', views.live_job_status_view, name='live_job_status'),
      path('job/create/', views.job_create_view, name='create_job'), 
-  
+    path('job/<int:job_id>/reject/', views.leader_reject_job_view, name='leader_reject_job_view'),
+
   
     # Leader Portal
     #  path('leader/respond-job/<int:job_id>/', views.respond_to_job_api, name='respond_to_job'),

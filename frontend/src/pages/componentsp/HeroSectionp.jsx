@@ -66,19 +66,19 @@ const HeroSection = () => {
                 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight"
                 variants={textVariants}
               >
-                Join India’s fastest-growing agricultural partner network.
+                Join Bharat’s Strongest Rural Workforce.
               </motion.h1>
               <motion.p
                 className="text-lg lg:text-xl text-muted-foreground"
                 variants={textVariants}
               >
-                Earn more, work with dignity, and unlock new opportunities for you and your community.
+                Steady work. Fair wages. Be part of a trusted network that powers rural Maharashtra.
               </motion.p>
             </div>
 
             <motion.div variants={buttonVariants}>
               <Button size="lg" variant="hero" className="text-lg px-8 py-6">
-               <a href = "/register/">Join Us</a>
+               <a href = "/register/">Register as a Worker</a>
               </Button>
             </motion.div>
 
@@ -111,7 +111,7 @@ const HeroSection = () => {
                     <Star key={i} className="w-4 h-4 fill-warning text-warning" />
                   ))}
                 </div>
-                <span className="text-sm font-medium">4.8 from 1,000+ professionals</span>
+                <span className="text-sm font-medium">4.8 from 1,000+ workers like you</span>
               </motion.div>
             </div>
           </motion.div>

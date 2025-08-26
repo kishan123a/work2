@@ -90,10 +90,10 @@ const AboutSection = () => {
         ${headlineVisible ? visibleStateClasses : hiddenStateClasses}
       `}>
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight text-gray-900">
-          Caring For Your <span className="text-brandGreen">Fields</span>
+          Driving Prosperity in Rural <span className="text-brandGreen">India</span>
         </h2>
         <p className="text-base font-medium leading-6 text-gray-600 max-w-full lg:max-w-none">
-          We’re building the future of rural labour — ensuring every farm has the hands it needs, and every worker has the dignity they deserve.
+        Consistent work for labourers. Peace of mind for farmers.
         </p>
       </div>
 
@@ -114,7 +114,7 @@ const AboutSection = () => {
                 Our <span className="text-brandGreen">Mission</span>
               </h3>
               <p className="text-sm sm:text-base font-medium leading-6 text-gray-600">
-                We’re here to end India’s farm labour crisis — bringing dignity, structure, and reliability to agricultural work, so farmers never have to scramble for help again.
+              We remove the uncertainty of labour — creating stable incomes, dignified livelihoods, and a clear path out of poverty for rural families.
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ const AboutSection = () => {
                 Our <span className="text-brandGreen">Vision</span>
               </h3>
               <p className="text-sm sm:text-base font-medium leading-6 text-gray-600">
-                We see a future where every farmer in Bharat can find skilled workers with a single WhatsApp message — and where every labourer is paid fairly and on time.
+              AA Bharat where every village is powered by a dependable workforce — driving high-value crops, thriving rural enterprises, and dignified livelihoods.
               </p>
             </div>
           </div>
