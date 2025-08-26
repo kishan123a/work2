@@ -31,6 +31,7 @@
                     Select the registered labourers for this job
                 </label>
                 {{ form.registered_labourers }}
+                
                 <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple labourers.</small>
             </div>
             
@@ -47,40 +48,33 @@
 </div>
 
 {% endblock %}
+
 {% block extra_scripts %}
 <script>
-$(function() { // Use jQuery's ready function for everything since Select2 requires it.
+document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[name="uses_registered_labourers"]');
+    const labourerDropdown = document.getElementById('labourer-dropdown-container');
     
-    // --- Step 1: Define the elements we'll be working with ---
-    const radioGroup = $('input[name="uses_registered_labourers"]');
-    const labourerDropdownContainer = $('#labourer-dropdown-container');
-    const labourerSelectInput = $('#{{ form.registered_labourers.id_for_label }}');
-
-    // --- Step 2: Create a function to show or hide the dropdown ---
-    function toggleDropdownVisibility() {
-        // Find the currently checked radio button.
-        const checkedValue = $('input[name="uses_registered_labourers"]:checked').val();
-        
-        // If the value is 'yes', show the dropdown, otherwise hide it.
-        if (checkedValue === 'yes') {
-            labourerDropdownContainer.slideDown(); // Use a smooth animation
+    function toggleDropdown() {
+        if (document.querySelector('input[name="uses_registered_labourers"]:checked').value === 'yes') {
+            labourerDropdown.style.display = 'block';
         } else {
-            labourerDropdownContainer.slideUp(); // Use a smooth animation
+            labourerDropdown.style.display = 'none';
         }
     }
 
-    // --- Step 3: Attach the function to the 'change' event of the radio buttons ---
-    radioGroup.on('change', toggleDropdownVisibility);
-    
-    // --- Step 4: Run the function once on page load to set the initial state ---
-    // This correctly handles cases where the form is reloaded with a value already selected.
-    toggleDropdownVisibility();
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', toggleDropdown);
+    });
 
-    // // --- Step 5: Initialize the Select2 dropdown with proper styling for Bootstrap 5 ---
-    // labourerSelectInput.select2({
-    //     placeholder: "Search and select labourers by name...",
-    //     width: '100%',
-    //     theme: "bootstrap-5" // This is crucial for matching your form's look and feel.
+    // Run on page load in case the form is re-rendered with a value
+    toggleDropdown();
+
+    // $(document).ready(function() {
+    //     $('#{{ form.registered_labourers.id_for_label }}').select2({
+    //         placeholder: "Search and select labourers...",
+    //         width: '100%'
+    //     });
     // });
 });
 </script>

@@ -349,16 +349,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-54c-xh!ea9mdtku-5bt38m7sz%lc03^p#&t0!1*u5y!nm#yi!0'
-
+# # SECRET_KEY = 'django-insecure-54c-xh!ea9mdtku-5bt38m7sz%lc03^p#&t0!1*u5y!nm#yi!0'
+# SECRET_KEY = "1213E3DCDAJCBIF2uhjhvvyu&*&*2374(*&^^*^^^%***^&61238Chgy^6673722323)"
 # # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
+# SECURE_SSL_REDIRECT = False
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
 
 # ALLOWED_HOSTS = ['*']
 # AUTH_USER_MODEL = 'auth.User' 
 
 # # Application definition
-
+# CSRF_TRUSTED_ORIGINS = ['https://kisanmitra.ai']
 # INSTALLED_APPS = [
 #     'django.contrib.admin',
 #     'django.contrib.auth',
@@ -371,6 +375,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     'widget_tweaks',
 #     'registration',
 #     'pwa',  
+#     'contact_app',
 # ]
 
 # MIDDLEWARE = [
@@ -417,6 +422,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #         'PORT': '5432',
 #     }
 # }
+# STATIC_URL = '/static/'
+# MEDIA_URL = '/media/'
+# STATIC_ROOT = '/app/staticfiles'
+# MEDIA_ROOT = '/app/media'
 
 # # Password validation
 # # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -453,9 +462,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # # Static files (CSS, JavaScript, Images)
 # # https://docs.djangoproject.com/en/5.2/howto/static-files/
 # # Static & Media
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [BASE_DIR / 'static']
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# # STATIC_URL = '/static/'
+# # STATICFILES_DIRS = [BASE_DIR / 'static']
+# # STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # # PWA Settings
 # PWA_APP_NAME = 'AgroIntel'

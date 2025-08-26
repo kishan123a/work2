@@ -17,7 +17,8 @@ import csv
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
-
+from django.contrib import messages
+from .forms import JobForm
 
 from .models import IndividualLabor, Mukkadam, Transport, Others
 def dashboard_login(request):
@@ -25,8 +26,13 @@ def dashboard_login(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
-            return redirect("registration:dashboard")
+            if user.is_superuser:
+                login(request, user)
+                return redirect("registration:dashboard")  # redirect to da>            
+            else:
+                messages.error(request, "Only superuser admins can access ")          
+                return redirect("dashboard_login")  # redirect to dashboard
+                
  # redirect to dashboard
     else:
         form = AuthenticationForm()
@@ -246,6 +252,28 @@ class DashboardView(View):
             })
 
         return locations
+
+
+@method_decorator(login_required(login_url="dashboard:login"), name='dispatch')
+def job_create_view(request):
+    """View to create a new job."""
+    if request.method == 'POST':
+        # If the form is submitted, process the data
+        form = JobForm(request.POST)
+        if form.is_valid():
+            form.save() # The new job is created and saved
+            # Redirect to the main job list page after successful creation
+            return redirect('registration:job_requests') 
+    else:
+        # If it's a GET request, show an empty form
+        form = JobForm()
+    
+    context = {
+        'form': form
+    }
+    return render(request, 'registration/job/job_form.html', context)
+
+
 
 @method_decorator(login_required(login_url="dashboard:login"), name='dispatch')
 class CategoryDetailView(View):
