@@ -125,13 +125,13 @@ useEffect(() => {
           <a href="#how-it-works" onClick={toggleMobileMenu} className="text-white text-xl font-semibold leading-6 hover:underline">How it works</a>
           <a href="#join-steps" onClick={toggleMobileMenu} className="text-white text-xl font-semibold leading-6 hover:underline">How to Join</a>
           <a href="#FAQ" onClick={toggleMobileMenu} className="text-white text-xl font-semibold leading-6 hover:underline">FAQ</a>
-              <button
+              <Button
               
               variant="hero" >
               <a href="/register/">
                  Register as a Worker
                </a>
-             </button>
+             </Button>
           
         </nav>
 
