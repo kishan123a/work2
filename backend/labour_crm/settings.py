@@ -1,4 +1,4 @@
-## uncommented code for deployment
+# # uncommented code for deployment
 # from pathlib import Path
 # import os
 # import dj_database_url
