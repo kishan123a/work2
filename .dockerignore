@@ -1,0 +1,12 @@
+# Ignore Node.js dependency folders
+**/node_modules
+
+# Ignore build output folders
+**/build
+**/dist
+
+# Ignore Django virtual environment
+**/venv
+
+# Ignore Python cache
+**/__pycache__
