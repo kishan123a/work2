@@ -57,7 +57,7 @@ const EndorsementSection = () => {
           >
             <div className="relative aspect-[4/5] max-w-md mx-auto rounded-xl shadow-2xl overflow-hidden">
                 <img
-                    src="https://placehold.co/600x750/34495E/FFFFFF?text=Vilas+Shinde" // Replace with actual image of Vilas Shinde
+                    src="client.jpg" // Replace with actual image of Vilas Shinde
                     alt="Vilas Shinde, Chairman of Sahyadri Farms"
                     className="w-full h-full object-cover"
                 />
