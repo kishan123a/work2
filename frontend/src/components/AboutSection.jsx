@@ -132,7 +132,7 @@ const AboutSection = () => {
         {/* Right Column: Image */}
         <div className={`rounded-2xl overflow-hidden shadow-2xl aspect-[4/5] ${baseTransition} ${imageVisible ? visibleState : hiddenState}`} style={{ transitionDelay: '100ms' }}>
           <img
-            src="IMG-20250730-WA0005.jpg"
+            src="image.webp"
             alt="A farmer working in a lush green field"
             className="w-full h-full object-cover"
             loading="lazy"

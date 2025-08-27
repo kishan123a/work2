@@ -206,7 +206,6 @@ if (workbox) {
     { url: '/android-chrome-192x192.png', revision: '1' },
     { url: '/android-chrome-512x512.png', revision: '1' },
     { url: '/robots.txt', revision: '1' },
-    { url: '/IMG-20250730-WA0011.jpg', revision: '1' },
   ]);
 
   // Navigation strategy

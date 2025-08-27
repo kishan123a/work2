@@ -57,7 +57,7 @@ const EndorsementSection = () => {
           >
             <div className="relative aspect-[4/5] max-w-md mx-auto rounded-xl shadow-2xl overflow-hidden">
                 <img
-                    src="client.jpg" // Replace with actual image of Vilas Shinde
+                    src="client.webp" // Replace with actual image of Vilas Shinde
                     alt="Vilas Shinde, Chairman of Sahyadri Farms"
                     className="w-full h-full object-cover"
                 />

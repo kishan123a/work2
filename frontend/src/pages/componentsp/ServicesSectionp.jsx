@@ -2,6 +2,9 @@ import { Card, CardContent } from "../ui/card";
 import { useState } from "react"; // Import useState for modal state
 import { motion, AnimatePresence } from "framer-motion"; // For animations
 import { X } from "lucide-react"; // For the close icon
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+
 
 const ServicesSectionp = () => {
   const services = [
@@ -10,7 +13,7 @@ const ServicesSectionp = () => {
       description:
         "Guide worker groups, plan shifts, track attendance, and maintain quality.",
       icon: "🧭",
-      image: "svc_supervisor.jpg",
+      image: "svc_supervisor.webp",
       detail:
         "This role covers daily team management, farmer communication, on-site problem solving, quality checks, and ensuring safe working conditions.",
     },
@@ -19,7 +22,7 @@ const ServicesSectionp = () => {
       description:
         "Forward & foundation pruning by trained hands for clean cuts and healthy regrowth.",
       icon: "✂️",
-      image: "svc_pruning.jpg",
+      image: "svc_pruning.webp",
       detail:
         "Includes pruning, cane selection, tying, dipping, bunch management, and paper wrapping - following Global GAP SOPs.",
     },
@@ -28,7 +31,7 @@ const ServicesSectionp = () => {
       description:
         "Tie plants to sticks, remove extra shoots, and prepare plants for better harvest.",
       icon: "🍅",
-      image: "svc_tomato.jpg",
+      image: "svc_tomato.webp",
       detail:
         "Tasks are tying plants to trellis, removing side shoots, keeping canopies neat, and making sure plants grow with enough space and air.",
     },
@@ -37,7 +40,7 @@ const ServicesSectionp = () => {
       description:
         "Pick, sort, and move fruits like grapes, tomatoes, or bananas.",
       icon: "🧺",
-      image: "svc_harvest.jpg",
+      image: "svc_harvest.webp",
       detail:
         "Includes careful fruit picking, sorting by size/quality, filling crates, and loading them on trucks.",
     },
@@ -46,7 +49,7 @@ const ServicesSectionp = () => {
       description:
         "Help with farm work like weeding, spraying, ploughing, and cleaning.",
       icon: "🧱",
-      image: "svc_general1.jpg",
+      image: "svc_general1.webp",
       detail:
         "Work includes removing weeds, spreading mulch, laying drip pipes, carrying materials, cleaning fields, and helping supervisors with daily work.",
     },
@@ -55,7 +58,7 @@ const ServicesSectionp = () => {
       description:
         "Bagging, propping, leaf management, de‑handing support and orchard hygiene.",
       icon: "🍌",
-      image: "svc_banana.png",
+      image: "svc_banana.webp",
       detail:
         "Work includes covering bunches with bags, bud care, helping with de-handing, cleaning the orchard, and handling fruit safely so it is good for export.",
     },
@@ -165,11 +168,12 @@ const ServicesSectionp = () => {
               </button>
 
               <div className="relative overflow-hidden rounded-t-lg">
-                <img
-                  src={selectedService.image}
-                  alt={selectedService.title}
-                  className="w-full h-72 object-cover" // Larger image for modal
-                />
+               <LazyLoadImage
+  src={selectedService.image}
+  alt={selectedService.title}
+  effect="blur"   // shows a blurred placeholder
+  className="w-full h-72 object-cover rounded-xl"
+/>
               </div>
 
               <div className="p-6 space-y-4">

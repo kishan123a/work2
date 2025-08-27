@@ -3,6 +3,9 @@ import { Star } from "lucide-react";
 // import farmerHero from "@/assets/farmer-hero.jpg";
 import workerCircle from "../assets/worker-circle.jpg";
 import { motion } from "framer-motion"; // Import motion
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+
 
 const HeroSection = () => {
   // Animation variants for different elements
@@ -124,11 +127,12 @@ const HeroSection = () => {
             animate="visible"
           >
             <div className="relative overflow-hidden rounded-3xl shadow-xl"> {/* Added shadow for depth */}
-              <img
-                src="main.png"
-                alt="Professional farmer working in the field"
-                className="w-full h-auto object-cover"
-              />
+             <LazyLoadImage
+  src="main.webp"
+  alt="Professional farmer working in the field"
+  effect="blur"
+  className="w-full h-auto object-cover"
+/>
               {/* Circular overlay with worker image */}
               <motion.div
                 className="absolute -bottom-8 -right-8 w-32 h-32 lg:w-40 lg:h-40"
@@ -137,9 +141,10 @@ const HeroSection = () => {
                 animate="visible"
               >
                 <div className="w-full h-full rounded-full bg-gradient-secondary p-1 shadow-lg"> {/* Added shadow */}
-                  <img
-                    src={workerCircle}
+                  <LazyLoadImage
+                    src="worker-circle.webp"
                     alt="Agricultural worker"
+                    effect="blur"
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>

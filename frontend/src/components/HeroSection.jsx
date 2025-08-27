@@ -87,7 +87,7 @@ const HeroSection = () => {
   `}
   style={{
     backgroundImage:
-      'linear-gradient(0deg, rgba(58, 58, 58, 0.42) 0%, rgba(58, 58, 58, 0.42) 100%), url(IMG-20250730-WA0010.jpg)',
+      'linear-gradient(0deg, rgba(58, 58, 58, 0.42) 0%, rgba(58, 58, 58, 0.42) 100%), url(IMG-20250730-WA0010.webp)',
     backgroundPosition: 'top center',
     backgroundSize: 'cover', // ✅ ensures no weird tiling
     backgroundRepeat: 'no-repeat',

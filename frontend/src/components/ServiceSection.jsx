@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 // ... (other imports are the same)
+import { FaGlobe, FaCalendarAlt, FaGraduationCap, FaUserCheck, FaTruck, FaRoute, FaHardHat, FaUsers, FaMobileAlt, FaChartBar, FaWallet, FaHome, FaHandshake } from "react-icons/fa";
+
+
 
 function useSectionVisibility(threshold = 0.2) {
   const [isVisible, setIsVisible] = useState(false);
@@ -25,13 +28,12 @@ function useSectionVisibility(threshold = 0.2) {
 }
 // Reusable ServiceCard Component
 // We add 'alignmentClass' to the props
-const ServiceCard = ({ title, description, isFeatured = false, onMouseEnter, onMouseLeave, isHovered, icon, alignmentClass = '' }) => {
+const ServiceCard = ({ title, description, isFeatured = false, onMouseEnter, onMouseLeave, isHovered, icon }) => {
   const isActive = isFeatured || isHovered;
 
   const cardBgClass = isActive ? 'bg-brandGreen' : 'bg-white';
   const titleColorClass = isActive ? 'text-white' : 'text-gray-900';
   const descriptionColorClass = isActive ? 'text-white' : 'text-gray-600';
-  // The icon background logic is no longer needed
 
   return (
     <div
@@ -44,20 +46,15 @@ const ServiceCard = ({ title, description, isFeatured = false, onMouseEnter, onM
         className={`p-6 rounded-xl flex flex-col justify-center items-start gap-4 sm:gap-6
           transition-all duration-300 ease-in-out w-full h-full ${cardBgClass}`}
       >
-        {/* ==== CHANGE HERE ==== */}
-        {/* The background color classes (bg-white/bg-brandGreen) have been removed from this div */}
+        {/* ==== ICON ==== */}
         <div
-          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center transition-all duration-300 text-2xl sm:text-3xl`}
-        >
-          {typeof icon === 'string' ? (
-            <span className={`transition-all duration-300 flex items-center justify-center whitespace-nowrap ${alignmentClass}`}>
-              {icon}
-            </span>
-          ) : (
-            // Fallback for react-icons if you ever mix them
-            icon && React.createElement(icon, { className: `w-6 h-6 sm:w-8 sm:h-8 ${isActive ? 'text-white' : 'text-brandGreen'} transition-all duration-300` })
-          )}
-        </div>
+  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 
+  ${isActive ? 'bg-white text-brandGreen' : 'bg-brandGreen text-white'}`}
+>
+  {icon}
+</div>
+
+        {/* ==== TITLE + DESCRIPTION ==== */}
         <div className="flex flex-col justify-center items-start gap-3 sm:gap-4">
           <h3 className={`text-2xl sm:text-3xl font-semibold leading-8 ${titleColorClass} transition-colors duration-300`}>
             {title}
@@ -70,6 +67,7 @@ const ServiceCard = ({ title, description, isFeatured = false, onMouseEnter, onM
     </div>
   );
 };
+
 
 
 const ServicesSection = () => {
@@ -91,14 +89,46 @@ const ServicesSection = () => {
     }
   }, [sectionIsVisible]);
 
-  const services = [
-    { id: 1, icon: "🌐📅", title: "Sourcing & Booking", description: "We match farmers with trained workers instantly — no scrambling, no delays.", isFeatured: true },
-    { id: 2, icon: "👨‍🏫✅", title: "Training & Quality Control", description: "We upskill workers crop by crop and ensure every task meets the highest standard.", alignmentClass: 'relative top-[2px]' },
-    { id: 3, icon: "🚛🛣️", title: "Transport & Logistics", description: "We manage door-to-farm transport, so workers arrive on time, ready to deliver.", alignmentClass: 'relative top-[3px]' },
-    { id: 4, icon: "👷‍♂️👷‍♂️", title: "On-Ground Execution", description: "Supervisors enforce discipline, track progress, and fix issues fast.", alignmentClass: 'relative top-[2px]' },
-    { id: 5, icon: "📲📊", title: "Payments & Records", description: "Wages, attendance, and bookings are tracked digitally — transparent, fair, and on time.", alignmentClass: 'relative top-[2px]' },
-    { id: 6, icon: "🛖🤝", title: "Welfare & Support", description: "Housing, food, sanitation - keep workers content and farmers worry-free.", alignmentClass: 'relative top-[2px]' },
-  ];
+const services = [
+  {
+    id: 1,
+    icon: <img src="global-search.webp" alt="Sourcing & Booking" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />,
+    title: "Sourcing & Booking",
+    description: "We match farmers with trained workers instantly — no scrambling, no delays.",
+    isFeatured: true,
+  },
+  {
+    id: 2,
+    icon: <img src="workshop.webp" alt="Training & Quality Control" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />,
+    title: "Training & Quality Control",
+    description: "We upskill workers crop by crop and ensure every task meets the highest standard.",
+  },
+  {
+    id: 3,
+    icon: <img src="bus.webp" alt="Transport & Logistics" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />,
+    title: "Transport & Logistics",
+    description: "We manage door-to-farm transport, so workers arrive on time, ready to deliver.",
+  },
+  {
+    id: 4,
+    icon: <img src="process.webp" alt="On-Ground Execution" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />,
+    title: "On-Ground Execution",
+    description: "Supervisors enforce discipline, track progress, and fix issues fast.",
+  },
+  {
+    id: 5,
+    icon: <img src="cash-payment.webp" alt="Payments & Records" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />,
+    title: "Payments & Records",
+    description: "Wages, attendance, and bookings are tracked digitally — transparent, fair, and on time.",
+  },
+  {
+    id: 6,
+    icon: <img src="welfare.webp" alt="Welfare & Support" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />,
+    title: "Welfare & Support",
+    description: "Housing, food, sanitation - keep workers content and farmers worry-free.",
+  },
+];
+
 
   return (
     <section id="services" ref={sectionRef} className="bg-white py-16 px-4 sm:px-6 lg:px-24">
