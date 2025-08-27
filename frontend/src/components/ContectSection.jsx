@@ -233,10 +233,11 @@ const ContactSection = () => {
       `}>
         {/* Left Side - Image (your existing code) */}
         <div className="w-full lg:w-1/2 h-64 sm:h-96 lg:h-auto bg-gray-600 relative overflow-hidden rounded-t-xl lg:rounded-l-xl lg:rounded-tr-none flex-1">
-          <LazyLoadImage
+          <img
             src="contact.webp"
             alt="Contact Us"
             effect='blur'
+            loading='lazy'
             className="w-full h-full object-cover"
             onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/897x560/E0F2F1/000000?text=Image+Not+Found"; }}
           />
