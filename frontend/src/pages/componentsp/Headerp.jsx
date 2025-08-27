@@ -111,7 +111,7 @@ useEffect(() => {
 
       {/* Mobile Menu Overlay */}
       {/* Changed transform translate-x to opacity for fade-in/out effect */}
-      <div className={`fixed inset-0 bg-teal-800 bg-opacity-90 z-50 transition-opacity duration-300 ease-in-out md:hidden
+      <div className={`fixed inset-0 bg-teal-800 bg-opacity-90 z-50 transition-opacity duration-300 ease-in-out md:hidden h-screen
         ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}
       `}>
         <div className="flex justify-end p-6">

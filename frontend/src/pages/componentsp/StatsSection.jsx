@@ -9,19 +9,19 @@ const StatsSection = () => {
       display: "25,000+",
       value: 25000, // Numeric value for animation
       label: "Farmers across Maharashtra",
-      icon: "👥",
+      icon: "👨‍🌾",
     },
     {
       display: "₹1,000Cr +",
       value: 1000, // Numeric value (in Cr) for animation
       label: "In wages available ",
-      icon: "💰",
+      icon: "💵",
     },
     {
       display: "70000 +",
       value: 70000, // Numeric value for animation
       label: "Acres of farmland",
-      icon: "🚚",
+      icon: "🌿",
     },
   ];
 
@@ -72,9 +72,9 @@ const StatsSection = () => {
   };
 
   return (
-    <section className="py-16 bg-background">
+    <section className="py-4 bg-background">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8" ref={ref}> {/* Attach ref to the grid container */}
+        <div className="grid grid-cols-3 gap-8" ref={ref}> {/* Attach ref to the grid container */}
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -85,7 +85,7 @@ const StatsSection = () => {
               transition={{ delay: index * 0.2 }} // Staggered animation for each stat
             >
               <div className="text-4xl mb-2">{stat.icon}</div>
-              <div className="text-3xl lg:text-4xl font-bold text-foreground">
+              <div className="text-l md:text-xl lg:text-4xl font-bold text-foreground">
                 <AnimatedNumber
                   from={0}
                   to={stat.value}

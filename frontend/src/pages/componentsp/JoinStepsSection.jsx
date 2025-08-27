@@ -6,27 +6,27 @@ const JoinStepsSection = () => {
   const steps = [
     {
       number: "1",
-      title: "Register in 2 minutes",
+      title: "Register",
       description:
-        "Fill basic details on WhatsApp. No long forms.",
+        "Share your details on WhatsApp in 2 minutes.",
     },
     {
       number: "2",
-      title: "Docs check & intro",
+      title: "Verify",
       description:
-        "Keep your ID ready. Our team will call help you.",
+        "Aadhaar check and welcome call from our team.",
     },
     {
       number: "3",
-      title: "Hands‑on training",
+      title: "Get Jobs",
       description:
-        "Complete a quick skills test and get your Worker ID.",
+        "Receive job cards directly on WhatsApp.",
     },
     {
       number: "4",
-      title: "Start work, get weekly pay",
+      title: "Start Earning",
       description:
-        "Begin receiving job cards on WhatsApp.",
+        "Work when you want and get paid daily.",
     },
   ];
 
@@ -103,7 +103,7 @@ const JoinStepsSection = () => {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Join AgroIntel in {steps.length} easy steps
+            Start Working in {steps.length} Simple Steps
           </motion.h2>
           <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto"
@@ -111,7 +111,7 @@ const JoinStepsSection = () => {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Our streamlined process ensures you're ready to work quickly and efficiently.
+            No long forms. No waiting at chowks.
           </motion.p>
         </div>
 

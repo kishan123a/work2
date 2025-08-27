@@ -51,9 +51,9 @@ const HeroSection = () => {
   };
 
   return (
-    <section id = "hero" className="bg-gradient-to-br from-muted/30 to-background py-16 lg:py-24 overflow-hidden"> {/* Added overflow-hidden */}
+    <section id = "hero" className="bg-gradient-to-br from-muted/30 to-background py-16 lg:py-24 pb-4 overflow-hidden"> {/* Added overflow-hidden */}
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center py-12 pb-4">
           {/* Left Content */}
           <motion.div
             className="space-y-8"
@@ -66,13 +66,13 @@ const HeroSection = () => {
                 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight"
                 variants={textVariants}
               >
-                Join Bharat’s Strongest Rural Workforce.
+                Join Maharashtra's Largest Agri Workforce.
               </motion.h1>
               <motion.p
                 className="text-lg lg:text-xl text-muted-foreground"
                 variants={textVariants}
               >
-                Steady work. Fair wages. Be part of a trusted network that powers rural Maharashtra.
+                Steady work. Fair wages. Be part of a trusted network that powers the agri ecosystem.
               </motion.p>
             </div>
 

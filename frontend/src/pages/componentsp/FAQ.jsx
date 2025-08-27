@@ -155,7 +155,7 @@ const FAQSection = () => {
           Frequently Asked <span className="text-brandGreen">Questions</span>
         </h2>
         <p className="text-base font-medium leading-6 text-gray-600 max-w-full lg:max-w-none">
-          Find answers to common questions about our services and how we operate.
+          Find answers to common questions.
         </p>
       </div>
 

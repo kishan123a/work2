@@ -16,10 +16,10 @@ const Footer = () => {
         <h3 className="text-xl sm:text-2xl font-semibold leading-6">Quick Links</h3>
         <nav className="flex flex-col justify-start items-start gap-3 sm:gap-4">
           <a href="#about-us" className="text-sm sm:text-base font-medium leading-6 hover:underline">About Us</a>
-          <a href="#Services" className="text-sm sm:text-base font-medium leading-6 hover:underline">Service</a>
+          <a href="#services" className="text-sm sm:text-base font-medium leading-6 hover:underline">Service</a>
           {/* <a href="#pricing" className="text-sm sm:text-base font-medium leading-6 hover:underline">Pricing</a> */}
-          <a href="#Faq" className="text-sm sm:text-base font-medium leading-6 hover:underline">FAQ</a>
-          <a href="#blog" className="text-sm sm:text-base font-medium leading-6 hover:underline">Blog</a>
+          <a href="#faq" className="text-sm sm:text-base font-medium leading-6 hover:underline">FAQ</a>
+          <a href="#contact" className="text-sm sm:text-base font-medium leading-6 hover:underline">Contact Us</a>
         </nav>
       </div>
 

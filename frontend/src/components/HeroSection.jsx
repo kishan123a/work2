@@ -146,8 +146,7 @@ const HeroSection = () => {
         </div>
         <div className="flex flex-col items-center justify-center gap-0.5 flex-1 p-1">
           <div className="text-xl sm:text-3xl lg:text-5xl font-semibold leading-tight text-gray-900 text-center">
-            <AnimatedCounter endValue={64} />
-            <span className="text-brandGreen">K</span>
+          <AnimatedCounter endValue={64} />K<span className="text-brandGreen">+</span>
           </div>
           <div className="text-[0.6rem] sm:text-xs lg:text-base font-medium leading-3 sm:leading-4 lg:leading-6 text-gray-600 text-center">
             Acres

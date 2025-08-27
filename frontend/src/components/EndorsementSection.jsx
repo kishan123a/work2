@@ -63,8 +63,8 @@ const EndorsementSection = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-6">
-                    <h3 className="text-2xl font-bold text-white">Vilas Shinde</h3>
-                    <p className="text-md text-gray-200">Chairman, Sahyadri Farms</p>
+                    <h3 className="text-2xl font-bold text-white"></h3>
+                    <p className="text-md text-gray-200"></p>
                 </div>
             </div>
           </div>
@@ -82,12 +82,12 @@ const EndorsementSection = () => {
             </h2>
             
             <p className="mt-6 text-lg text-gray-600">
-              “Backed by India’s largest farmer-owned company of 20,000+ growers, we are building the dependable workforce engine that powers Bharat’s horticulture ecosystem.”
+            With 18,000+ farmer members, India’s largest farmer-owned company is helping us build the workforce engine that drives Bharat’s horticulture forward.
             </p>
 
             <blockquote className="mt-8 p-6 border-l-4 border-brandGreen bg-white shadow-md rounded-r-lg">
               <p className="text-lg text-gray-700 italic leading-relaxed">
-                “At Sahyadri Farms, we’ve seen first-hand how unreliable labour holds back farmers. Backing this platform ensures our members get trained, dependable teams to grow high-value crops with confidence.”
+                “Unreliable labour has long held farmers back. With this platform, we give every farmer access to skilled, dependable teams — enabling them to focus on high-value crops and increase their incomes.” — Vilas Shinde, Chairman, Sahyadri Farms
               </p>
             </blockquote>
           </div>

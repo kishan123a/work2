@@ -6,49 +6,49 @@ import { X } from "lucide-react"; // For the close icon
 const ServicesSectionp = () => {
   const services = [
     {
-      title: "Supervisor / Mukkadam (Manages Teams)",
+      title: "Team Supervisor",
       description:
-        "Lead labour groups, plan shifts, allocate tasks, track attendance, quality and safety.",
+        "Guide worker groups, plan shifts, track attendance, and maintain quality.",
       icon: "🧭",
       image: "svc_supervisor.jpg",
       detail:
-        "Monthly retainer or daily rate. Handles on‑ground coordination, issue resolution, tool/PPE checks and farmer updates.",
+        "This role covers daily team management, farmer communication, on-site problem solving, quality checks, and ensuring safe working conditions.",
     },
     {
-      title: "Pruning Specialist – Grapes",
+      title: "Pruning Specialist",
       description:
         "Forward & foundation pruning by trained hands for clean cuts and healthy regrowth.",
       icon: "✂️",
       image: "svc_pruning.jpg",
       detail:
-        "Piece‑rate per acre/row or daily. Includes canopy balance, tool discipline, waste removal and SOP‑based speed teams.",
+        "Includes pruning, cane selection, tying, dipping, bunch management, and paper wrapping - following Global GAP SOPs.",
     },
     {
-      title: "Tomato Operations – Tying & Care",
+      title: "Tomato Care & Tying",
       description:
-        "Trellis tying, staking, de‑suckering and training for neat canopies and faster harvests.",
+        "Tie plants to sticks, remove extra shoots, and prepare plants for better harvest.",
       icon: "🍅",
       image: "svc_tomato.jpg",
       detail:
-        "Piece‑rate per bed/row or daily. Teams formed by experience/speed; quick orientation provided on site.",
+        "Tasks are tying plants to trellis, removing side shoots, keeping canopies neat, and making sure plants grow with enough space and air.",
     },
     {
-      title: "Harvesting (Multi‑Crop)",
+      title: "Harvesting",
       description:
-        "Gentle picking, sorting and crate movement for grapes, tomatoes or bananas as per season.",
+        "Pick, sort, and move fruits like grapes, tomatoes, or bananas.",
       icon: "🧺",
       image: "svc_harvest.jpg",
       detail:
-        "Piece‑rate per crate/box/kg or daily. Includes basic QC, packhouse coordination and post‑harvest handling discipline.",
+        "Includes careful fruit picking, sorting by size/quality, filling crates, and loading them on trucks.",
     },
     {
-      title: "General Labour (Unskilled)",
+      title: "Field Support",
       description:
-        "Weeding, mulching, drip laying, loading/unloading, field clean‑up and camp support.",
+        "Help with farm work like weeding, spraying, ploughing, and cleaning.",
       icon: "🧱",
       image: "svc_general1.jpg",
       detail:
-        "Daily wages with weekly payouts. Can be paired with a supervisor for larger sites; tools and guidance provided.",
+        "Work includes removing weeds, spreading mulch, laying drip pipes, carrying materials, cleaning fields, and helping supervisors with daily work.",
     },
     {
       title: "Banana Fruit Care",
@@ -57,7 +57,7 @@ const ServicesSectionp = () => {
       icon: "🍌",
       image: "svc_banana.png",
       detail:
-        "Piece‑rate per bunch/acre or daily. Safety/PPE guidance included; residue‑safe practices and simple record‑keeping.",
+        "Work includes covering bunches with bags, bud care, helping with de-handing, cleaning the orchard, and handling fruit safely so it is good for export.",
     },
   ];
 

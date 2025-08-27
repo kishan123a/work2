@@ -189,7 +189,7 @@ const TestimonialsSection = () => {
           Backed by <span className="text-brandGreen">Sahyadri Farms</span>
         </h2>
         <p className="text-base font-medium leading-6 text-gray-600 max-w-full lg:max-w-none">
-        Backed by India’s largest farmer-owned company of 20,000+ growers, we are building the dependable workforce engine that powers Bharat’s horticulture ecosystem.
+        With 18,000+ farmer members, India’s largest farmer-owned company is helping us build the workforce engine that drives Bharat’s horticulture forward.
         </p>
       </div>
 
