@@ -255,7 +255,6 @@ def submit_registration_api(request):
                 instance.skill_dipping = 'dipping' in skills
                 instance.skill_thinning = 'thinning' in skills
 
-
         elif category == 'transport':
             service_areas = get_json_data(data, 'service_areas')
             
@@ -313,7 +312,42 @@ def submit_registration_api(request):
 
         instance.save()
         logger.info("Instance and photo saved successfully.")
-        
+        try:
+            recipient_name = instance.full_name
+            recipient_number = str(instance.mobile_number)
+
+            if recipient_number:
+                if recipient_number.startswith('+'):
+                    recipient_number = recipient_number[1:]
+
+                template_config = {
+                    'individual_labor': {'name': 'farmer_labour_intro', 'image_url': 'https://images.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'},
+                    'mukkadam': {'name': 'labour_message_1', 'image_url': 'https://images.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'},
+                    'transport': {'name': 'labour_message_1', 'image_url': 'https://images.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'},
+                    'others': {'name': 'labour_message_1', 'image_url': 'https://images.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'},
+                }
+                config = template_config.get(category)
+                
+                if config:
+                    components = [
+                        {"type": "header", "parameters": [{"type": "image", "image": {"link": config['image_url']}}]},
+                        {"type": "body", "parameters": [{"type": "text", "text": recipient_name}]}
+                    ]
+                    success, details = send_whatsapp_template(
+                        to_number=recipient_number,
+                        template_name=config['name'],
+                        components=components
+                    )
+                    WhatsAppLog.objects.create(
+                        recipient_number=recipient_number,
+                        template_name=config['name'],
+                        status='sent' if success else 'failed',
+                        details=str(details)
+                    )
+        except Exception as e:
+            logger.error(f"Failed to send WhatsApp message for {instance.full_name}. Error: {e}")
+        # --- WHATSAPP INTEGRATION END ---
+
         return JsonResponse({'status': 'success', 'message': 'Registration saved.'}, status=200)
 
     except Exception as e:
