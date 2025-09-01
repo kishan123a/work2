@@ -293,7 +293,9 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
+DATABASES['default']['OPTIONS'] = {
+    'client_encoding': 'UTF8',
+}
 
 # --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
@@ -306,17 +308,27 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
 
-# --- STATIC & MEDIA FILES FOR PRODUCTION ---
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-STATIC_ROOT = '/app/staticfiles'
-MEDIA_ROOT = '/app/media'
+# # --- STATIC & MEDIA FILES FOR PRODUCTION ---
+# STATIC_URL = '/static/'
+# MEDIA_URL = '/media/'
+# STATIC_ROOT = '/app/staticfiles'
+# MEDIA_ROOT = '/app/media'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR/'media' # 
+
+# # Static files (CSS, JavaScript, Images)
+# # https://docs.djangoproject.com/en/5.2/howto/static-files/
+# Static & Media
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR/'static']
+STATIC_ROOT = BASE_DIR/'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # --- PWA SETTINGS ---
 PWA_APP_NAME = 'AgroIntel'

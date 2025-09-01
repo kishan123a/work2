@@ -320,6 +320,423 @@ def submit_registration_api(request):
         logger.error(f"Critical error in submit_registration_api: {e}", exc_info=True)
         return JsonResponse({'status': 'error', 'message': 'An unexpected server error occurred.'}, status=500)
 
+
+
+
+
+# registration/views.py
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models import F, Q
+import json
+import logging
+import datetime
+
+from .models import ChatContact, Message, WhatsAppLog
+
+
+logger = logging.getLogger(__name__)
+
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+import os, requests, logging
+from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+# ... your other views ...
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+import os, requests, logging, json
+from dotenv import load_dotenv
+from .whats_app import upload_media_to_meta, send_whatsapp_message, save_outgoing_message
+from .models import ChatContact
+
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+# ... your other views ...
+
+
+
+@csrf_exempt
+def whatsapp_webhook_view(request):
+    """Handles all incoming WhatsApp events."""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        logger.info(f"Webhook received: {json.dumps(data, indent=2)}")
+        try:
+            for entry in data.get('entry', []):
+                for change in entry.get('changes', []):
+                    value = change.get('value', {})
+                    if 'messages' in value:
+                        for msg in value.get('messages', []):
+                            contact, _ = ChatContact.objects.get_or_create(wa_id=msg['from'])
+                            contact.last_contact_at = timezone.now()
+                            contact.save()
+
+                            message_type = msg.get('type')
+
+                            if message_type == 'reaction':
+                                reaction_data = msg['reaction']
+                                target_wamid = reaction_data['message_id']
+                                emoji = reaction_data.get('emoji') # Use .get() to handle reaction removals
+
+                                try:
+                                    message_to_update = Message.objects.get(wamid=target_wamid)
+                                    if emoji:
+                                        message_to_update.reaction = emoji   # store emoji in reaction field
+                                        message_to_update.status = 'reacted'
+                                    else:
+                                        message_to_update.reaction = None 
+                                        message_to_update.status = 'read' # Reaction was removed
+                                    message_to_update.save()
+                                except Message.DoesNotExist:
+                                    logger.warning(f"Received reaction for a message not found in DB: {target_wamid}")
+                                
+                                continue 
+                            defaults = {
+                                'contact': contact, 'direction': 'inbound', 'message_type': message_type,
+                                'timestamp': datetime.datetime.fromtimestamp(int(msg['timestamp']), tz=datetime.timezone.utc),
+                                'raw_data': msg
+                            }
+                            if 'context' in msg and msg['context'].get('id'):
+                                try:
+                                    defaults['replied_to'] = Message.objects.get(wamid=msg['context']['id'])
+                                except Message.DoesNotExist: pass
+                            
+                            if message_type == 'text':
+                                defaults['text_content'] = msg['text']['body']
+                            elif message_type in ['image', 'video', 'audio', 'document','sticker']:
+                                media_info = msg[message_type]
+                                defaults['media_id'] = media_info.get('id')
+                                defaults['caption'] = media_info.get('caption', '')
+                                if message_type == "image" and media_info.get("view_once"):
+                                    defaults['is_view_once'] = True   # make sure your Message model has this field
+                                else:
+                                    defaults['is_view_once'] = False
+                                message_instance, _ = Message.objects.update_or_create(wamid=msg['id'], defaults=defaults)
+                                file_name, file_content = download_media_from_meta(media_info['id'])
+                                if message_type == "image" and media_info.get("view_once"):
+                                    file_name, file_content = download_media_from_meta(media_info['id'])
+                                    if file_name and file_content:
+                                        message_instance.media_file.save(file_name, file_content, save=True)
+                                    continue
+                                if file_name and file_content:
+                                    message_instance.media_file.save(file_name, file_content, save=True)
+                                continue
+
+                            elif message_type == 'contacts':
+                                contact_data = msg['contacts'][0]
+                                
+                                # Use the structured name and phone number from the payload
+                                defaults['contact_name'] = contact_data['name']['formatted_name']
+                                if contact_data.get('phones') and contact_data['phones'][0]:
+                                    defaults['contact_phone'] = contact_data['phones'][0].get('phone')
+
+                                # You can optionally still save the raw vCard to the text field
+                                if 'vcard' in contact_data:
+                                    defaults['text_content'] = contact_data['vcard']
+
+                            elif message_type == 'location':
+                                location_data = msg['location']
+                                defaults['latitude'] = location_data['latitude']
+                                defaults['longitude'] = location_data['longitude']
+                                # Save the location name/address to the main text field
+                                defaults['text_content'] = location_data.get('name', '') or location_data.get('address', '')
+                            
+                            elif message_type == 'reaction':
+                                emoji = msg['reaction']['emoji']
+                                Message.objects.filter(wamid=msg['reaction']['message_id']).update(status=f"Reacted with {emoji}")
+                                continue
+                            
+                            Message.objects.update_or_create(wamid=msg['id'], defaults=defaults)
+                            
+                            if message_type in ['image', 'video', 'audio', 'document', 'sticker']:
+                                media_info = msg[message_type]
+                                media_id = media_info.get('id')
+                                if media_id:
+                                    file_name, file_content = download_media_from_meta(media_id)
+                                    if file_name and file_content:
+                                        message_instance.media_file.save(file_name, file_content, save=True)
+                    elif 'statuses' in value:
+                        for status_data in value.get('statuses', []):
+                            Message.objects.filter(wamid=status_data['id']).update(status=status_data['status'])
+        except Exception as e:
+            logger.error(f"Error in webhook: {e}", exc_info=True)
+        return JsonResponse({"status": "success"}, status=200)
+
+@login_required
+def template_sender_view(request):
+    """
+    Fetches templates from the Meta API and renders the sender tool page.
+    """
+    templates_data = []
+    error = None
+    contacts = ChatContact.objects.all()
+    try:
+        META_ACCESS_TOKEN=os.environ.get('META_ACCESS_TOKEN')
+        WABA_ID=os.environ.get('WABA_ID')
+        url = f"https://graph.facebook.com/v19.0/{WABA_ID}/message_templates?fields=name,components,status"
+        headers = {"Authorization": f"Bearer {META_ACCESS_TOKEN}"}
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        # Filter for only approved templates
+        all_templates = response.json().get('data', [])
+        templates_data = [t for t in all_templates if t.get('status') == 'APPROVED']
+    except Exception as e:
+        logger.error(f"Failed to fetch templates: {e}")
+        error = "Could not load templates from Meta API. Please check your credentials."
+
+    
+    return render(request, 'registration/chat/template_sender.html', {
+        "templates": templates_data,
+        "contacts": contacts,
+        "error": error,
+    })
+
+@csrf_exempt
+@login_required
+def send_template_api_view(request):
+    """
+    API endpoint to send a composed template message to one or many recipients.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+
+    try:
+        recipients = request.POST.getlist('recipients[]')  # list of wa_ids
+        template_name = request.POST.get('template_name')
+        params = request.POST.getlist('params[]')
+        media_file = request.FILES.get('header_image')
+
+        results = []
+
+        for wa_id in recipients:
+            try:
+                contact = ChatContact.objects.get(wa_id=wa_id)
+
+                # Personalize params: replace $name with actual contact name
+                personalized_params = []
+                for p in params:
+                    if "$name" in p:
+                        personalized_params.append(p.replace("$name", contact.name or ""))
+                    else:
+                        personalized_params.append(p)
+
+                payload = {
+                    "messaging_product": "whatsapp",
+                    "to": wa_id,
+                    "type": "template",
+                    "template": {
+                        "name": template_name,
+                        "language": {"code": "en"}
+                    }
+                }
+
+                components = []
+                # Handle header image
+                if media_file:
+                    media_id = upload_media_to_meta(media_file)
+                    if not media_id:
+                        results.append({
+                            "wa_id": wa_id,
+                            "status": "error",
+                            "error": "Failed to upload media"
+                        })
+                        continue
+                    components.append({
+                        "type": "header",
+                        "parameters": [{"type": "image", "image": {"id": media_id}}]
+                    })
+
+                # Handle body parameters
+                if personalized_params:
+                    parameters_list = [{"type": "text", "text": p} for p in personalized_params]
+                    components.append({"type": "body", "parameters": parameters_list})
+
+                if components:
+                    payload['template']['components'] = components
+
+                success, response_data = send_whatsapp_message(payload)
+
+                if success:
+                    # Save outgoing message
+                    save_outgoing_message(
+                        contact=contact,
+                        wamid=response_data['messages'][0]['id'],
+                        message_type='template',
+                        text_content=f"Sent template: {template_name}",
+                        raw_data=response_data
+                    )
+                    results.append({"wa_id": wa_id, "status": "success", "response": response_data})
+                else:
+                    results.append({"wa_id": wa_id, "status": "error", "response": response_data})
+
+            except ChatContact.DoesNotExist:
+                results.append({"wa_id": wa_id, "status": "error", "error": "Contact not found"})
+            except Exception as e:
+                logger.error(f"Error sending to {wa_id}: {e}", exc_info=True)
+                results.append({"wa_id": wa_id, "status": "error", "error": str(e)})
+
+        return JsonResponse({"results": results})
+
+    except Exception as e:
+        logger.error(f"Error in send_template_api_view: {e}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@login_required
+def chat_contact_list_view(request):
+    contacts = ChatContact.objects.all().order_by(F('last_contact_at').desc(nulls_last=True))
+    return render(request, 'registration/chat/chat_list.html', {'contacts': contacts})
+
+@login_required
+def chat_detail_view(request, wa_id):
+    wa_id = wa_id.strip()
+    contact = get_object_or_404(ChatContact, wa_id=wa_id)
+    conversation_messages = list(contact.messages.select_related('replied_to').order_by('timestamp'))
+    from types import SimpleNamespace
+    try:
+        search_number = wa_id[2:] if wa_id.startswith('91') else wa_id
+        initial_template_log = WhatsAppLog.objects.filter(recipient_number=search_number, status='sent').order_by('timestamp').first()
+        if initial_template_log:
+            initial_message = SimpleNamespace(
+                direction='outbound', text_content=f"Sent template: {initial_template_log.template_name}",
+                timestamp=initial_template_log.timestamp, status='sent', message_type='template',
+                media_file=None, caption=None, replied_to=None
+            )
+            conversation_messages.append(initial_message)
+            conversation_messages.sort(key=lambda msg: msg.timestamp)
+    except Exception as e:
+        logger.error(f"Could not query WhatsAppLog: {e}")
+    return render(request, 'registration/chat/chat_detail.html', {'contact': contact, 'messages': conversation_messages})
+
+# registration/views.py
+import json # Make sure json is imported at the top
+
+@csrf_exempt
+@login_required
+def send_reaction_api_view(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid HTTP method'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        to_number = data.get('to_number')
+        message_id = data.get('message_id') # wamid of the message to react to
+        emoji = data.get('emoji')
+
+        if not all([to_number, message_id, emoji]):
+            return JsonResponse({'status': 'error', 'message': 'Missing parameters'}, status=400)
+
+        payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": to_number,
+            "type": "reaction",
+            "reaction": {
+                "message_id": message_id,
+                "emoji": emoji
+            }
+        }
+
+        success, response_data = send_whatsapp_message(payload)
+
+        if success:
+            try:
+                message_to_update = Message.objects.get(wamid=message_id)
+                if emoji:
+                    # USE NEW LOGIC
+                    message_to_update.reaction = emoji
+                    message_to_update.status = 'reacted'
+                else:
+                    # Handle removing a reaction
+                    message_to_update.reaction = None
+                    message_to_update.status = 'read'
+                message_to_update.save()
+            except Message.DoesNotExist:
+                logger.warning(f"Sent reaction to {message_id}, but couldn't find message in DB to update.")
+        
+            return JsonResponse({'status': 'success', 'data': response_data})
+        else:
+            return JsonResponse({'status': 'error', 'data': response_data}, status=500)
+
+    except Exception as e:
+        logger.error(f"Error in send_reaction_api_view: {e}", exc_info=True)
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@csrf_exempt
+@login_required
+def send_reply_api_view(request):
+    to_number = request.POST.get('to_number')
+    message_text = request.POST.get('message_text', '').strip()
+    media_file = request.FILES.get('media_file')
+    replied_to_wamid = request.POST.get('replied_to_wamid')
+
+    if not message_text and not media_file:
+        return JsonResponse({'status': 'error', 'message': 'Cannot send an empty message.'}, status=400)
+
+    payload = {"messaging_product": "whatsapp", "to": to_number}
+    if replied_to_wamid:
+        payload['context'] = {'message_id': replied_to_wamid}
+    
+    message_api_type = 'text'
+
+    if media_file:
+        media_id = upload_media_to_meta(media_file)
+        if not media_id:
+            return JsonResponse({'status': 'error', 'message': 'Failed to upload media'}, status=500)
+        
+        
+        content_type = media_file.content_type
+        if content_type.startswith('image/'):
+            message_api_type = 'image'
+        elif content_type.startswith('video/'):
+            message_api_type = 'video'
+        elif content_type.startswith('audio/'):
+            message_api_type = 'audio'
+        else:
+            # Default to 'document' for PDFs, DOCX, etc.
+            message_api_type = 'document'
+        
+        payload['type'] = message_api_type
+        payload[message_api_type] = {'id': media_id}
+
+        # --- FIX: Only add caption if message_text is not empty ---
+        if message_text:
+            payload[message_api_type]['caption'] = message_text
+        if message_api_type == 'document':
+            payload[message_api_type]['filename'] = media_file.name
+    else:
+        payload.update({"type": "text", "text": {"body": message_text}})
+
+    success, response_data = send_whatsapp_message(payload)
+    if success:
+        save_outgoing_message(
+            contact=get_object_or_404(ChatContact, wa_id=to_number),
+            wamid=response_data['messages'][0]['id'],
+            message_type=message_api_type,
+            text_content=message_text if not media_file else "",
+            caption=message_text if media_file else "",
+            raw_data=response_data,
+            replied_to_wamid=replied_to_wamid,
+            media_file=media_file
+        )
+        return JsonResponse({'status': 'success', 'data': response_data})
+    else:
+        return JsonResponse({'status': 'error', 'data': response_data}, status=500)
+
+
 def success_view(request):
     return render(request, 'registration/success.html')
 

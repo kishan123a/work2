@@ -26,6 +26,11 @@ services:
       - POSTGRES_USER=supplysidelabour
       - POSTGRES_PASSWORD=z0k5NgbdYn5f8szqKSXx
       - POSTGRES_HOST=supplysidelabour.c12ggig2u4ig.ap-south-1.rds.amazonaws.com
+      - API_VERSION= v19.0
+      - META_API_URL = https://graph.facebook.com/V19.0/
+      - META_ACCESS_TOKEN = EAAhMBt21QaMBPCyLtJj6gwjDy6Gai4fZApb3MXuZBZCCm0iSEd8ZCZCJdkRt4cOtvhyeFLZCNUwitFaLZA3ZCwv7enN6FBFgDMAOKl7LMx0J2kCjy6Qd6AqnbnhB2bo2tgsdGmn9ZCN5MD6yCgE3shuP62t1spfSB6ZALy1QkNLvIaeWZBcvPH00HHpyW6US4kil2ENZADL4ZCvDLVWV9seSbZCxXYzVCezIenCjhSYtoKTIlJ
+      - PHONE_NUMBER_ID =  694609297073147
+
   nginx:
     build:
       context: .

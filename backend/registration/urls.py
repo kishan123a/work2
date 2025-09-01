@@ -12,11 +12,24 @@ urlpatterns = [
     path('success/', views.success_view, name='success_page'),
      
     
+     path('chat/', views.chat_contact_list_view, name='chat_contact_list'),
+    path('template-sender/', views.template_sender_view, name='template_sender'),
+    path('api/send-template/', views.send_template_api_view, name='send_template_api'),
+#This page will show the detailed conversation for a specific contact
+    path('chat/<str:wa_id>/', views.chat_detail_view, name='chat_detail'),
+    
+    # This is an API endpoint for sending replies from the frontend
+    path('api/chat/send-reply/', views.send_reply_api_view, name='send_reply_api'),
+    path('whatsapp/webhook/', views.whatsapp_webhook_view, name='whatsapp_webhook'),
+    path('api/chat/send-reaction/', views.send_reaction_api_view, name='send_reaction_api'),
 
     # API endpoints
     # path('api/check-mobile-number/', views.check_mobile_number_api, name='check_mobile_number_api'),
     path('api/location-status/', views.location_status_api, name='location_status_api'),
     path('api/submit-registration/', views.submit_registration_api, name='submit_registration_api'),
+    
+    
+    
     # path("dashboard/login/", views.dashboard_login, name="dashboard_login"),
     # Authentication
     path('login/', views.login_view, name='login'),
@@ -63,8 +76,7 @@ urlpatterns = [
     # path('job/<int:job_id>/complete/', views.mark_job_complete, name='mark_job_complete'),
     path('job/<int:job_id>/live-status/', views.live_job_status_view, name='live_job_status'),
      path('job/create/', views.job_create_view, name='create_job'), 
-    path('job/<int:job_id>/reject/', views.leader_reject_job_view, name='leader_reject_job_view'),
-
+  
   
     # Leader Portal
     #  path('leader/respond-job/<int:job_id>/', views.respond_to_job_api, name='respond_to_job'),
@@ -84,7 +96,7 @@ urlpatterns = [
     path('profile/mukadam/<int:mukadam_id>/', views.mukadam_performance_profile_view, name='mukadam_profile'),
     path('profile/labourer/<int:labourer_id>/', views.labourer_profile_view, name='labourer_profile'),
     path('profiles/select/', views.profile_selector_view, name='profile_selector'),
-
+    
 
     # Dashboard URLs
     path('dashboard/login', dashboard_login, name='dashboard'),

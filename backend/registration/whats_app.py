@@ -1,0 +1,146 @@
+import requests
+import os
+import logging
+from django.utils import timezone
+from .models import ChatContact, Message
+from django.core.files.base import ContentFile
+from dotenv import load_dotenv
+
+
+# registration/services.py
+logger = logging.getLogger(__name__)
+def send_whatsapp_template(to_number, template_name, components):
+    """
+    Sends a WhatsApp template message using the Meta Graph API.
+    """ 
+    access_token =os.environ.get('META_ACCESS_TOKEN')
+
+    phone_id = os.environ.get('PHONE_NUMBER_ID')
+    
+    access_url = os.environ.get('META_API_URL')
+    if not all([access_token, phone_id]):
+        logger.error("WhatsApp API credentials are not set.")
+        return False, {"error": "Server not configured for messages."}
+
+    api_url = f"{access_url}/{phone_id}/messages"
+    
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number,
+        "type": "template",
+        "template": {
+            "name": template_name,
+            "language": {"code": "en"},
+            "components": components,
+        },
+    }
+
+    try:
+        response = requests.post(api_url, json=payload, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        message_id = response.json().get('messages', [{}])[0].get('id')
+        logger.info(f"Successfully sent template '{template_name}' to {to_number}.")
+        return True, response.json()
+    
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to send WhatsApp template to {to_number}: {e}")
+        error_details = e.response.json() if e.response else str(e)
+        return False, {"error": error_details}
+
+def download_media_from_meta(media_id):
+    access_token =os.environ.get('META_ACCESS_TOKEN')
+
+    phone_id = os.environ.get('PHONE_NUMBER_ID')
+    access_url = os.environ.get('META_API_URL')
+    try:
+        url = f"{access_url}/{media_id}/"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        media_info = response.json()
+        media_url = media_info.get('url')
+        if not media_url: return None, None
+        media_response = requests.get(media_url, headers=headers)
+        media_response.raise_for_status()
+        content_type = media_response.headers.get('Content-Type', 'application/octet-stream')
+        extension = content_type.split('/')[-1]
+        file_name = f"{media_id}.{extension}"
+        return file_name, ContentFile(media_response.content)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to download media {media_id}: {e}")
+        return None, None
+
+def upload_media_to_meta(file):
+    access_token =os.environ.get('META_ACCESS_TOKEN')
+
+    phone_id = os.environ.get('PHONE_NUMBER_ID')
+    access_url = os.environ.get('META_API_URL')
+    try:
+        url = f"{access_url}/{phone_id}/media"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        file.seek(0)
+
+        files = {
+            'file': (file.name, file, file.content_type),
+        }
+        data = {
+            'messaging_product': 'whatsapp',
+        }
+        response = requests.post(url, headers=headers, files=files, data=data)
+        response.raise_for_status()
+        return response.json().get('id')
+    except Exception as e:
+        logger.error(f"Failed to upload media: {e}")
+        return None
+
+def send_whatsapp_message(payload):
+    access_token =os.environ.get('META_ACCESS_TOKEN')
+
+    phone_id = os.environ.get('PHONE_NUMBER_ID')
+    access_url = os.environ.get('META_API_URL')
+    url = f"{access_url}/{phone_id}/messages"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        return True, response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error from Meta API: {e.response.text if e.response else str(e)}")
+        return False, e.response.json() if e.response else {'error': str(e)}
+
+def save_outgoing_message(contact, wamid, message_type, text_content="", caption="", raw_data={}, replied_to_wamid=None,media_file = None):
+    defaults = {
+        'contact': contact,
+        'direction': 'outbound',
+        'message_type': message_type,
+        'text_content': text_content,
+        'caption': caption,
+        'timestamp': timezone.now(),
+        'raw_data': raw_data,
+        'status': 'sent'
+    }
+    if replied_to_wamid:
+        try:
+            defaults['replied_to'] = Message.objects.get(wamid=replied_to_wamid)
+        except Message.DoesNotExist:
+            pass
+    
+    message, created = Message.objects.update_or_create(wamid=wamid, defaults=defaults)
+
+    if media_file and not message.media_file:
+        # We use the wamid to create a unique file name
+        file_name = f"outbound/{contact.wa_id}/{wamid}_{media_file.name}"
+        message.media_file.save(file_name, media_file, save=True)
+
+    contact.last_contact_at = timezone.now()
+    contact.save()
+    """
+    # Sends a WhatsApp template message using the Meta Graph API.
+    # """ 
+    
