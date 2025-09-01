@@ -162,6 +162,7 @@ def get_json_data(data, key):
         logger.error(f"JSONDecodeError or TypeError for key '{key}': {data.get(key)}. Error: {e}")
         return []
 
+from .whats_app import send_whatsapp_template
 @csrf_exempt
 @require_POST
 def submit_registration_api(request):
